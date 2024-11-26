@@ -1,0 +1,15 @@
+# Cache para arquivos estáticos
+<FilesMatch "\.(jpg|jpeg|png|gif|css|js|ico)$">
+    Header set Cache-Control "max-age=31536000, public"
+</FilesMatch>
+
+# Desativa MultiViews, caso esteja ativo, para evitar problemas com React Router
+Options -MultiViews
+
+RewriteEngine On
+RewriteBase /
+
+# Redirecionar todas as requisições para o index.html, exceto para arquivos reais (como imagens, CSS, JS, etc.)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.html [QSA,L]

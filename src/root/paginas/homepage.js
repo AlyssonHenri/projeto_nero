@@ -14,11 +14,11 @@ function Homepage() {
     }
 
     return (
-        <div className='relative flex flex-col h-screen w-screen p-3 bg-[#e9e8e8] overflow-auto'>
+        <div className='relative h-screen w-screen bg-[#e9e8e8]'>
             <div className='bottom-0 start-0 fixed'>
                 <NavBar/>
             </div>
-            <div className='flex flex-col'>
+            <div className='flex flex-col p-3 '>
                 <h1 className='font-semibold text-xl mb-3'>Minhas Postagens</h1>
                 <div className='flex overflow-x-auto gap-4 pb-3'>
                     <Miniatura
