@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -10,4 +14,51 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+.sombraT {
+  text-shadow: 4px 2px 4px #022148;
+}
+
+.input-generico {
+  border: 1px;
+  border-style: solid;
+  border-color: rgba(128, 128, 128, 0.486);
+  border-radius: 8px;
+  font-weight: 400;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  padding-left: 13px;
+  margin-bottom: 10px;
+}
+
+.botao-estilo-1 {
+  border: 2px;
+  border-style: solid;
+  border-color: #022148;
+  border-radius: 8px;
+  width: 100%;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.botao-estilo-2 {
+  background-color: #022148;
+  border-radius: 8px;
+  width: 100%;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  font-weight: 500;
+  font-size: 18px;
+  color: white;
+}
+
+.botao-estilo-3 {
+  background-color: #022148;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 15px;
+  color: white;
 }
