@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from 'react'
-import { isBrowser } from 'react-device-detect'
-import NavBar from '../componentes/nav_bar'
+import React, { useEffect, useState } from "react";
+import { isBrowser } from "react-device-detect";
+import NavBar from "../componentes/nav_bar";
 import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer } from "react-leaflet";
 
 function Homepage() {
-    const [posicaoAtual, setPosicaoAtual] = useState(null)
+    const [posicaoAtual, setPosicaoAtual] = useState(null);
+    const [loadingLocation, setLoadingLocation] = useState(true);
+    const [locationError, setLocationError] = useState(null);
 
     useEffect(() => {
         if (navigator.geolocation) {
@@ -14,27 +16,36 @@ function Homepage() {
                     setPosicaoAtual({
                         lat: position.coords.latitude,
                         lng: position.coords.longitude,
-                    })
-
+                    });
+                    setLoadingLocation(false);
                 },
                 (err) => {
-                    console.error(err)
+                    setLocationError("Não foi possível acessar sua localização.");
+                    console.error("Erro ao obter localização:", err);
+                    setLoadingLocation(false);
                 }
-            )
+            );
+        } else {
+            setLocationError("Geolocalização não é suportada pelo seu navegador.");
+            setLoadingLocation(false);
         }
-    }, [])
+    }, []);
 
     if (isBrowser) {
         return (
             <div className="flex flex-col items-center justify-center h-screen w-screen">
-                Acesso indisponível, tente novamente em um celular
+                <p className="text-lg font-medium">
+                    Acesso indisponível, tente novamente em um dispositivo móvel.
+                </p>
             </div>
-        )
+        );
     }
 
-    // coordenadas direto para aracati, caso n dê certo pegar pela api do browser
-    const coordenadasFallback = [-4.56447, -37.76533]
-    const center = posicaoAtual ? [posicaoAtual.lat, posicaoAtual.lng] : coordenadasFallback
+    // coordenadas de aracati
+    const coordenadasFallback = [-4.56447, -37.76533];
+    const center = posicaoAtual
+        ? [posicaoAtual.lat, posicaoAtual.lng]
+        : coordenadasFallback;
 
     return (
         <div className="relative h-full w-screen bg-[#e9e8e8]">
@@ -47,16 +58,26 @@ function Homepage() {
                     type="text"
                     className="input-generico w-full"
                     placeholder="Entre com nomes de ruas ou bairros"
-                ></input>
+                />
 
-                <div className="w-screen -ml-3 h-[55%] ">
-                    <MapContainer center={center} zoom={13}>
-                        <TileLayer
-                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                        />
-                    </MapContainer>
-                </div>
+                {loadingLocation ? (
+                    <div className="flex justify-center items-center h-[55%]">
+                        <p className="text-lg font-medium">Carregando mapa...</p>
+                    </div>
+                ) : locationError ? (
+                    <div className="flex justify-center items-center h-[55%]">
+                        <p className="text-lg text-red-600">{locationError}</p>
+                    </div>
+                ) : (
+                    <div className="w-screen -ml-3 h-[55%]">
+                        <MapContainer center={center} zoom={13}>
+                            <TileLayer
+                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                            />
+                        </MapContainer>
+                    </div>
+                )}
 
                 <div className="flex gap-2 mt-2 mb-4">
                     <button className="botao-estilo-1">Filtrar</button>
@@ -73,7 +94,7 @@ function Homepage() {
                 <button className="botao-estilo-2 mt-2">Criar Postagem</button>
             </div>
         </div>
-    )
+    );
 }
 
-export default Homepage
+export default Homepage;
