@@ -12,7 +12,7 @@ function NavBar() {
                 <FcHome size={30}/>
                 <h1>Início</h1>
             </div>
-            <div className='flex flex-col items-center justify-center'>
+            <div onClick={() => {navigate('/mapa')}} className='flex flex-col items-center justify-center'>
                 <FcPanorama size={30}/>
                 <h1>Mapa Interativo</h1>
             </div>

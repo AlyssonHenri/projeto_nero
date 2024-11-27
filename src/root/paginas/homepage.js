@@ -14,7 +14,7 @@ function Homepage() {
     }
 
     return (
-        <div className='relative h-screen w-screen bg-[#e9e8e8]'>
+        <div className='relative h-full w-screen bg-[#e9e8e8]'>
             <div className='bottom-0 start-0 fixed'>
                 <NavBar/>
             </div>

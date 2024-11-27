@@ -5,6 +5,7 @@ import './index.css';
 import Login from './root/paginas/login'
 import Homepage from './root/paginas/homepage'
 import Postagem from './root/paginas/postagem_detalhes'
+import Mapa from './root/paginas/mapa'
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route>
           <Route path='/home' element={<Homepage/>}/>
           <Route path='/post/:id' element={<Postagem/>}/>
+          <Route path='/mapa' element={<Mapa/>} />
         </Route>
 
       </Routes>
