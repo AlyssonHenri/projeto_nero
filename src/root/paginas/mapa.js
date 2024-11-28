@@ -3,8 +3,11 @@ import { isBrowser } from "react-device-detect";
 import NavBar from "../componentes/nav_bar";
 import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer } from "react-leaflet";
+import { PiArrowLeft, PiArrowLeftBold } from "react-icons/pi";
+import { useNavigate } from "react-router-dom";
 
 function Homepage() {
+    const navigate = useNavigate()
     const [posicaoAtual, setPosicaoAtual] = useState(null);
     const [loadingLocation, setLoadingLocation] = useState(true);
     const [locationError, setLocationError] = useState(null);
@@ -53,7 +56,10 @@ function Homepage() {
                 <NavBar />
             </div>
             <div className="flex flex-col h-screen p-3">
-                <h1 className="font-semibold text-xl mb-3">Localizar</h1>
+                <div className="flex items-center gap-2 mb-3">
+                    <PiArrowLeftBold onClick={() => (navigate('/home'))} size={20}/>
+                    <h1 className="font-semibold text-xl -mt-[1px]">Localizar</h1>
+                </div>
                 <input
                     type="text"
                     className="input-generico w-full"
@@ -79,12 +85,7 @@ function Homepage() {
                     </div>
                 )}
 
-                <div className="flex gap-2 mt-2 mb-4">
-                    <button className="botao-estilo-1">Filtrar</button>
-                    <button className="botao-estilo-2">Detalhes</button>
-                </div>
-
-                <h1 className="font-semibold text-xl mb-1">Filtrar por</h1>
+                <h1 className="font-semibold text-xl mb-1 mt-4">Filtrar por</h1>
                 <div className="flex w-full gap-2 overflow-x-auto pb-3">
                     <button className="botao-estilo-4">⏱️ Tempo</button>
                     <button className="botao-estilo-4">📋 Categoria</button>
