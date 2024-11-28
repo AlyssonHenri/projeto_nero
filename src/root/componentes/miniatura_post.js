@@ -19,7 +19,7 @@ function Miniatura({ tipo, nome, status, imagem }) {
     const { emoji, texto } = statusInfo[status.toLowerCase()] || statusInfo.pendente
 
     return (
-        <div className='flex flex-col min-w-48 min-h-48'>
+        <div className='flex flex-col min-w-[48%] min-h-48'>
             <div className={`relative w-full h-full`}>
                 <img
                     alt={`Imagem de ${nome}`}

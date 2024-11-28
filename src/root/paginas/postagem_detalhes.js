@@ -1,8 +1,10 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import NavBar from '../componentes/nav_bar';
+import { PiArrowLeftBold } from 'react-icons/pi';
 
 function Detalhes() {
+    const navigate = useNavigate()
     const { state } = useLocation();
 
     if (!state) {
@@ -13,8 +15,9 @@ function Detalhes() {
 
     return (
         <div className='relative flex flex-col h-screen w-screen bg-[#e9e8e8] overflow-auto'>
-            <div className='flex items-center bg-white w-screen min-h-12 text-xl font-semibold shadow-inner'>
-                <h1 className='ml-5 shadow-2xl'>Detalhes da Postagem </h1>   
+            <div className='flex items-center bg-white w-screen min-h-12 text-xl font-semibold shadow-inner gap-2'>
+                <PiArrowLeftBold className='ml-2' onClick={() => (navigate('/home'))} size={20}/>
+                <h1 className='shadow-2xl -mt-[2px]'>Detalhes da Postagem </h1>   
             </div> 
             <div className='p-3'>     
                 <div className='bottom-0 start-0 absolute'>
