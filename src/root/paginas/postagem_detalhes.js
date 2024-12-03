@@ -15,14 +15,15 @@ function Detalhes() {
 
     return (
         <div className='relative flex flex-col h-screen w-screen bg-[#e9e8e8] overflow-auto'>
-            <div className='flex items-center bg-white w-screen min-h-12 text-xl font-semibold shadow-inner gap-2'>
+            <div className='fixed top-0 flex items-center bg-white w-screen min-h-12 text-xl font-semibold shadow-inner gap-2'>
                 <PiArrowLeftBold className='ml-2' onClick={() => (navigate('/home'))} size={20}/>
                 <h1 className='shadow-2xl -mt-[2px]'>Detalhes da Postagem </h1>   
             </div> 
-            <div className='p-3'>     
-                <div className='bottom-0 start-0 absolute'>
-                    <NavBar/>
-                </div> 
+            <div className='fixed bottom-0 start-0'>
+                <NavBar/>
+            </div> 
+            <div className='p-3 mt-10'>     
+
                 <div className='flex flex-col '>
                     <div className='flex justify-between rounded-t-lg py-3'>
                         <div className='flex gap-2'>

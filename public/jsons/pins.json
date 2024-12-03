@@ -1,0 +1,5 @@
+[
+    { "lat": -4.56447, "lng": -37.76533, "color": "#FF5733", "text": "Local 1" },
+    { "lat": -4.565, "lng": -37.76, "color": "#FF5733", "text": "Local 2" },
+    { "lat": -4.56, "lng": -37.77, "color": "#28A745", "text": "Local 3" }
+]
