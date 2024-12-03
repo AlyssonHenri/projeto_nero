@@ -9,13 +9,21 @@
   75% { transform: translateX(-5px); }
 }
 
+:root {
+  --azul-marinho: #007BFF;
+  --azul-escuro: #022148;
+  --cinza-claro: #F4F4F4;
+  --vermelho: #FF5733;
+  --verde: #28A745;
+}
+
 .shake {
   animation: shake 0.5s ease-in-out;
 }
 
 
 .sombraT {
-  text-shadow: 4px 2px 4px #022148;
+  text-shadow: 4px 2px 4px var(--azul-escuro);
 }
 
 .input-generico {
@@ -33,7 +41,7 @@
 .botao-estilo-1 {
   border: 2px;
   border-style: solid;
-  border-color: #022148;
+  border-color: var(--azul-escuro);
   border-radius: 8px;
   width: 100%;
   padding-top: 6px;
@@ -43,7 +51,7 @@
 }
 
 .botao-estilo-2 {
-  background-color: #022148;
+  background-color: var(--azul-escuro);
   border-radius: 8px;
   width: 100%;
   padding-top: 8px;
@@ -54,7 +62,7 @@
 }
 
 .botao-estilo-3 {
-  background-color: #022148;
+  background-color: var(--azul-escuro);
   border-radius: 8px;
   font-weight: 500;
   font-size: 15px;
@@ -71,25 +79,23 @@
 }
 
 .botao-estilo-1:active {
-  background-color: rgba(185, 185, 185, 0.8);
   font-size: 18.3px;
   transform: scale(0.98);
 }
 
 .botao-estilo-2:active {
-  background-color: rgba(2, 33, 72, 0.9);
+  background-color: var(--azul-escuro);
   font-size: 18.3px;
   transform: scale(0.98); 
 }
 
 .botao-estilo-3:active {
-  background-color: rgba(2, 33, 72, 0.9);
+  background-color: var(--azul-escuro);
   font-size: 15.3px;
   transform: scale(0.98);
 }
 
 .botao-estilo-4:active {
-  background-color: rgba(128, 128, 128, 0.233);
   font-size: 15.3px;
   transform: scale(0.98);
 }
@@ -98,12 +104,39 @@
   transition: background-color 0.2s, transform 0.1s;
 }
 
-
 .leaflet-container {
   height: 100%;
   width: 100vw;
 }
 
-.leaflet-control-attribution {
-  display: none !important;
+.leaflet-tooltip {
+  background-color: transparent !important;
+  border: 0px !important;
+  box-shadow: none !important;
+}
+
+.myCSSClass {
+  background: transparent;
+  border: 2px solid transparent;
+}
+
+.leaflet-tooltip.myCSSClass {
+  background-color: transparent !important;
+  border: 2px solid transparent !important;
+}
+
+.leaflet-tooltip-left.myCSSClass::before {
+  border-left-color: transparent !important;
+}
+
+.leaflet-tooltip-right.myCSSClass::before {
+  border-right-color: transparent !important;
+}
+
+.leaflet-tooltip-top.myCSSClass::before {
+  border-top-color: transparent !important;
+}
+
+.leaflet-tooltip-bottom.myCSSClass::before {
+  border-bottom-color: transparent !important;
 }
