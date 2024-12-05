@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { isBrowser } from 'react-device-detect'
 
@@ -9,15 +9,34 @@ function Login() {
   const [erroLogin, setErroLogin] = useState(false)
   const [shake, setShake] = useState(false)
 
-  const mockUser = {
-    email: 'usuario@exemplo.com',
-    senha: '123',
-  }
+  useEffect(() => {
+    localStorage.clear()
+  },[])
 
-  const handleLogin = () => {
-    if (login === mockUser.email && senha === mockUser.senha) {
-      navigate('/home')
-    } else {
+  const handleLogin = async () => {
+    try {
+      const response = await fetch('http://18.228.8.220:8000/api/api-token-auth/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: login.toLowerCase(),
+          password: senha,
+        }),
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        localStorage.setItem('token', data.token)
+        navigate('/home')
+      } else {
+        setErroLogin(true)
+        setShake(true)
+        setTimeout(() => setShake(false), 500)
+      }
+    } catch (error) {
+      console.error('Erro na autenticação:', error)
       setErroLogin(true)
       setShake(true)
       setTimeout(() => setShake(false), 500)
@@ -31,7 +50,7 @@ function Login() {
           isBrowser ? 'min-w-[40%] min-h-[50%] justify-center' : 'min-w-[80%]'
         }`}
       >
-        <h1 className='text-[50px] font-semibold sombraT mb-10'>Nero</h1>
+        <img className='mb-10' src='/images/nero-logo com fundo.png'></img>
         <div className='w-[90%]'>
           <h1 className='font-semibold'>Email</h1>
           <input
@@ -54,7 +73,9 @@ function Login() {
           {erroLogin && <p className='text-red-500 text-sm'>Email ou senha incorretos.</p>}
         </div>
         <div className='flex justify-around gap-2 mt-1 w-[90%]'>
-          <button className='botao-estilo-1'>Cadastrar</button>
+          <button
+            onClick={() => navigate('/cadastro')}
+           className='botao-estilo-1'>Cadastrar</button>
           <button
             onClick={handleLogin}
             className={`botao-estilo-2 ${shake ? 'shake' : ''}`}

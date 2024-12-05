@@ -1,31 +1,57 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import './index.css';
+import React from 'react'
+import { Routes, Route } from 'react-router-dom'
+import './index.css'
 
 import Login from './root/paginas/login'
+import Cadastro from './root/paginas/cadastro'
 import Homepage from './root/paginas/homepage'
 import Postagem from './root/paginas/postagem_detalhes'
+import NovaPostagem from './root/paginas/nova_postagem'
 import Mapa from './root/paginas/mapa'
+import IsolarRota from './root/util/isolar_rota'
 
 function App() {
   return (
     <main>
       <Routes>
-        {/* rota inicial */}
-        <Route >
-          <Route path='/' element={<Login />} />
-        </Route>
+        <Route path="/" element={<Login />} />
+        <Route path="/cadastro" element={<Cadastro />} />
 
-        {/* rota validadas */}
-        <Route>
-          <Route path='/home' element={<Homepage/>}/>
-          <Route path='/post/:id' element={<Postagem/>}/>
-          <Route path='/mapa' element={<Mapa/>} />
-        </Route>
-
+        <Route 
+          path="/home" 
+          element={
+            <IsolarRota>
+              <Homepage />
+            </IsolarRota>
+          }
+        />
+        <Route 
+          path="/post/:id" 
+          element={
+            <IsolarRota>
+              <Postagem />
+            </IsolarRota>
+          }
+        />
+        <Route 
+          path="/post/novo" 
+          element={
+            <IsolarRota>
+              <NovaPostagem />
+            </IsolarRota>
+          }
+        />
+        <Route 
+          path="/mapa" 
+          element={
+            <IsolarRota>
+              <Mapa />
+            </IsolarRota>
+          }
+        />
       </Routes>
     </main>
-  );
+  )
 }
 
-export default App;
+export default App
