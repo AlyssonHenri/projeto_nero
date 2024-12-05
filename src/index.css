@@ -39,15 +39,16 @@
 }
 
 .botao-estilo-1 {
-  border: 2px;
+  border: 1px;
   border-style: solid;
-  border-color: var(--azul-escuro);
+  border-color: rgba(128, 128, 128, 0.486);
   border-radius: 8px;
   width: 100%;
   padding-top: 6px;
   padding-bottom: 6px;
   font-weight: 600;
   font-size: 18px;
+  background: linear-gradient(to bottom, white, rgba(128, 128, 128, 0.486));
 }
 
 .botao-estilo-2 {
@@ -78,6 +79,15 @@
   font-size: 16px;
 }
 
+.botao-estilo-5 {
+  border-radius: 8px;
+  padding: 4px 3px;
+  width: auto;
+  white-space: nowrap;
+  font-weight: 500;
+  font-size: 16px;
+}
+
 .botao-estilo-1:active {
   font-size: 18.3px;
   transform: scale(0.98);
@@ -97,6 +107,10 @@
 
 .botao-estilo-4:active {
   font-size: 15.3px;
+  transform: scale(0.98);
+}
+
+.botao-estilo-5:active {
   transform: scale(0.98);
 }
 

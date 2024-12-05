@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { isBrowser } from 'react-device-detect';
-import Miniatura from '../componentes/miniatura_post';
-import Post from '../componentes/post';
-import NavBar from '../componentes/nav_bar';
+import React, { useEffect, useState } from 'react'
+import { isBrowser } from 'react-device-detect'
+import Miniatura from '../componentes/miniatura_post'
+import Post from '../componentes/post'
+import NavBar from '../componentes/nav_bar'
 
 function SkeletonMiniatura() {
     return (
@@ -41,35 +41,67 @@ function SkeletonPost() {
 }
 
 function Homepage() {
-    const [miniaturas, setMiniaturas] = useState([]);
-    const [posts, setPosts] = useState([]);
-    const [loadingMiniaturas, setLoadingMiniaturas] = useState(true);
-    const [loadingPosts, setLoadingPosts] = useState(true);
+    const [miniaturas, setMiniaturas] = useState([])
+    const [posts, setPosts] = useState([])
+    const [loadingMiniaturas, setLoadingMiniaturas] = useState(true)
+    const [loadingPosts, setLoadingPosts] = useState(true)
+    const token = localStorage.getItem('token')
+
+    const fetchMinis = async () => {
+        try {
+            const response = await fetch('http://18.228.8.220:8000/api/postagem/', {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': `Token ${token}`,
+                }
+            })
+
+            if (response.ok) {
+                const data = await response.json()
+                setMiniaturas(data)
+            } else {
+                console.error(`Erro ao carregar miniaturas: ${response.status}`)
+            }
+        } catch (error) {
+            console.error('Erro de conexão ao carregar miniaturas:', error)
+        } finally {
+            setLoadingMiniaturas(false)
+        }
+    }
+
+    const fetchPosts = async () => {
+        try {
+            const response = await fetch('http://18.228.8.220:8000/api/feed/', {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': `Token ${token}`,
+                }
+            })
+
+            if (response.ok) {
+                const data = await response.json()
+                setPosts(data)
+            } else {
+                console.error(`Erro ao carregar miniaturas: ${response.status}`)
+            }
+        } catch (error) {
+            console.error('Erro de conexão ao carregar miniaturas:', error)
+        } finally {
+            setLoadingPosts(false)
+        }
+    }
 
     useEffect(() => {
-        fetch('../jsons/miniaturas.json')
-            .then(response => response.json())
-            .then(data => {
-                setMiniaturas(data);
-                setLoadingMiniaturas(false);
-            })
-            .catch(error => console.error('Erro ao carregar miniaturas:', error));
-
-        fetch('../jsons/posts.json')
-            .then(response => response.json())
-            .then(data => {
-                setPosts(data);
-                setLoadingPosts(false);
-            })
-            .catch(error => console.error('Erro ao carregar posts:', error));
-    }, []);
+        fetchMinis()
+        fetchPosts()
+    }, [])
 
     if (isBrowser) {
         return (
             <div className='flex flex-col items-center justify-center h-screen w-screen'>
                 Acesso indisponível, tente novamente em um celular
             </div>
-        );
+        )
     }
 
     return (
@@ -77,7 +109,7 @@ function Homepage() {
             <div className='bottom-0 start-0 fixed z-50'>
                 <NavBar />
             </div>
-            <div className='flex flex-col p-3 '>
+            <div className='flex flex-col p-3'>
                 <h1 className='font-semibold text-xl mb-3'>Minhas Postagens</h1>
                 <div className='flex overflow-x-auto gap-4 pb-3'>
                     {loadingMiniaturas
@@ -87,8 +119,8 @@ function Homepage() {
                         : miniaturas.map((miniatura, index) => (
                               <Miniatura
                                   key={index}
-                                  tipo={miniatura.tipo}
-                                  nome={miniatura.nome}
+                                  tipo={miniatura.natureza}
+                                  nome={miniatura.titulo}
                                   status={miniatura.status}
                                   imagem={miniatura.imagem}
                               />
@@ -105,23 +137,20 @@ function Homepage() {
                               <Post
                                   key={post.id}
                                   id={post.id}
-                                  nome={post.nome}
+                                  nome={post.titulo}
                                   status={post.status}
+                                  imagem={post.imagem}
+                                  perfil={post.usuario}
+                                  criacao={post.criacao}
+                                  votos={post.votos}
                                   descricao={post.descricao}
                                   natureza={post.natureza}
-                                  imagem={post.imagem}
-                                  fotoPerfil={post.fotoPerfil}
-                                  perfil={post.perfil}
-                                  data={post.data}
-                                  hora={post.hora}
-                                  votos={post.votos}
-                                  estrelas={post.estrelas}
                               />
                           ))}
                 </div>
             </div>
         </div>
-    );
+    )
 }
 
-export default Homepage;
+export default Homepage

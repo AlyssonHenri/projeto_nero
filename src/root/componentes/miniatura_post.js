@@ -2,14 +2,25 @@ import React from 'react'
 
 function Miniatura({ tipo, nome, status, imagem }) {
     const tipoCor = {
-        infraestrutura: 'bg-blue-500',
-        iluminacao: 'bg-yellow-500',
-        agua: 'bg-teal-500',
-        saneamento: 'bg-green-500',
-        outros: 'bg-gray-500'
+        1: 'bg-blue-500',
+        2: 'bg-yellow-500',
+        3: 'bg-green-500',
+        4: 'bg-brown-500',
+        5: 'bg-gray-500',
+        6: 'bg-gray-200'
     }
 
-    const corDeFundo = tipoCor[tipo.toLowerCase()] || 'bg-gray-500'
+    const tipoTexto = {
+        1: 'Infraestrutura',
+        2: 'Iluminacao',
+        3: 'Coleta de lixo',
+        4: 'Saneamento',
+        5: 'Trânsito',
+        6: 'Outros'
+    }
+
+    const corDeFundo = tipoCor[tipo] || 'bg-gray-500'
+    const textoTipo = tipoTexto[tipo] || 'Desconhecido'
 
     const statusInfo = {
         pendente: { emoji: '🔴', texto: 'Pendente' },
@@ -19,15 +30,15 @@ function Miniatura({ tipo, nome, status, imagem }) {
     const { emoji, texto } = statusInfo[status.toLowerCase()] || statusInfo.pendente
 
     return (
-        <div className='flex flex-col min-w-[48%] min-h-48'>
+        <div className='flex flex-col w-[48%] min-h-48'>
             <div className={`relative w-full h-full`}>
                 <img
                     alt={`Imagem de ${nome}`}
-                    src={imagem}
+                    src={`http://18.228.8.220:8000${imagem}`}
                     className='w-full h-full rounded-t-lg rounded-ss-xl'
                 />
                 <h1 className={`absolute ${corDeFundo} p-1 rounded-ss-lg rounded-ee-lg text-white top-0 text-sm`}>
-                    {tipo}
+                    {textoTipo}
                 </h1>
             </div>
             <div className='bg-white px-3 flex flex-col font-semibold rounded-b-lg'>
