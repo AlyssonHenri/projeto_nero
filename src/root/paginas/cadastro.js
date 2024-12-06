@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 
 function Cadastro() {
     const navigate = useNavigate()
-    const [erro, setErro] = useState(false)
+    const [erro, setErro] = useState('')
     const [formData, setFormData] = useState({
         username: '',
         password: '',
@@ -16,94 +16,106 @@ function Cadastro() {
     })
 
     const handleChange = (e) => {
-        const { name, value } = e.target
-        setFormData((prevState) => ({
+      const { name, value } = e.target
+      setFormData((prevState) => ({
         ...prevState,
         [name]: value,
-        }))
+      }))
     }
 
-    const handleSubmit = async () => {
-        if (!formData.username || !formData.password || !formData.first_name || !formData.email) {
-            setErro(true)
-            return
-        }
-    
-        const camposPreenchidos = Object.fromEntries(
-            Object.entries(formData).filter(([key, value]) => {
-                if (key === 'username') {
-                    value = value.toLowerCase()
-                }
-                return value !== ''
-            })
-        )
-    
-        try {
-            const response = await fetch('http://18.228.8.220:8000/api/usuario/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(camposPreenchidos),
-            })
-    
-            if (response.ok) {
-                await handleLogin(camposPreenchidos.username, camposPreenchidos.password)
-            } else {
-                setErro(true)
-            }
-        } catch (err) {
-            console.error('Erro no cadastro:', err)
-            setErro(true)
-        }
-    }    
-
-    const handleLogin = async (username, password) => {
-        try {
-            const response = await fetch('http://18.228.8.220:8000/api/api-token-auth/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    username: username,
-                    password: password,
-                }),
-            })
-        
-            if (response.ok) {
-                const data = await response.json()
-                localStorage.setItem('token', data.token)
-                navigate('/home')
-            } else {
-                console.error('Erro no login após cadastro.')
-            }
-        } catch (erro) {
-            console.error('Erro na autenticação:', erro)
-        }
+  const handleSubmit = async () => {
+    if (!formData.username || !formData.password || !formData.first_name || !formData.email) {
+      setErro('Preencha os campos obrigatórios.')
+      console.log(formData)
+      return
     }
-      
 
-  const graudeEnsino = [
-    { id: '7', text: 'Ensino Médio' },
-    { id: '5', text: 'Ensino Fundamental' },
-    { id: '9', text: 'Educação Superior' },
-    { id: '8', text: 'Educação Superior Incompleta' },
-    { id: '13', text: 'Doutorado' },
-    { id: '12', text: 'Mestrado' },
-    { id: '6', text: 'Ensino Médio Incompleto' },
-    { id: '11', text: 'Pós-Graduação' },
-    { id: '10', text: 'Pós-Graduação Incompleta' },
-    { id: '4', text: '6º ao 9º Ano Fundamental Incompleto' },
-    { id: '3', text: '5º Ano Fundamental' },
-    { id: '2', text: 'Até o 5º Ano Fundamental Incompleto' },
-    { id: '1', text: 'Analfabeto' },
-  ]
+    if (formData.password.length < 8) {
+      setErro('A senha deve ter pelo menos 8 caracteres.')
+      return
+    }
+
+    if (!formData.email.includes('@')) {
+      setErro('Por favor, insira um email válido.')
+      return
+    }
+
+    const camposPreenchidos = Object.fromEntries(
+      Object.entries(formData).filter(([key, value]) => {
+        if (key === 'username') {
+          value = value.toLowerCase()
+        }
+        return value !== ''
+      })
+    )
+
+    try {
+      const response = await fetch('http://18.228.8.220:8000/api/usuario/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(camposPreenchidos),
+      })
+
+      if (response.ok) {
+        await handleLogin(camposPreenchidos.username, camposPreenchidos.password)
+      } else {
+        const errorData = await response.json()
+        setErro(errorData.username || 'Erro ao realizar o cadastro.')
+      }
+    } catch (err) {
+        console.error('Erro no cadastro:', err)
+        setErro('Erro no servidor. Tente novamente mais tarde.')
+    }
+  }
+  
+  const handleLogin = async (username, password) => {
+    try {
+      const response = await fetch('http://18.228.8.220:8000/api/api-token-auth/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: username,
+          password: password,
+        }),
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        localStorage.setItem('token', data.token)
+        navigate('/home')
+      } else {
+        setErro('Erro no login após cadastro.')
+      }
+    } catch (erro) {
+      console.error('Erro na autenticação:', erro)
+      setErro('Erro ao autenticar. Verifique suas credenciais.')
+    }
+  }
+
+    const graudeEnsino = [
+      { id: '7', text: 'Ensino Médio' },
+      { id: '5', text: 'Ensino Fundamental' },
+      { id: '9', text: 'Educação Superior' },
+      { id: '8', text: 'Educação Superior Incompleta' },
+      { id: '13', text: 'Doutorado' },
+      { id: '12', text: 'Mestrado' },
+      { id: '6', text: 'Ensino Médio Incompleto' },
+      { id: '11', text: 'Pós-Graduação' },
+      { id: '10', text: 'Pós-Graduação Incompleta' },
+      { id: '4', text: '6º ao 9º Ano Fundamental Incompleto' },
+      { id: '3', text: '5º Ano Fundamental' },
+      { id: '2', text: 'Até o 5º Ano Fundamental Incompleto' },
+      { id: '1', text: 'Analfabeto' },
+    ]
 
   return (
     <div className="flex flex-col h-screen w-[95%] ml-3">
       <div className="fixed top-0 flex items-center -ml-3 bg-white w-screen min-h-12 text-xl font-semibold shadow-xl gap-2">
-        <h1 className="shadow-2xl -mt-[2px] ml-3">Detalhes da Postagem </h1>
+        <h1 className="shadow-2xl -mt-[2px] ml-3">Cadastro</h1>
       </div>
 
       <div className="mt-14">
@@ -214,7 +226,7 @@ function Cadastro() {
 
       {erro && (
         <p className="text-red-500 text-sm mt-2">
-          Preencha os campos obrigatórios.
+          {erro}
         </p>
       )}
 

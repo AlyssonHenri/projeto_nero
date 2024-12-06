@@ -52,7 +52,7 @@ function Login() {
       >
         <img className='mb-10' src='/images/nero-logo com fundo.png'></img>
         <div className='w-[90%]'>
-          <h1 className='font-semibold'>Email</h1>
+          <h1 className='font-semibold'>Usuário</h1>
           <input
             type='email'
             className='input-generico w-full'
