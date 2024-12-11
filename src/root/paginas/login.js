@@ -15,7 +15,7 @@ function Login() {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch('http://18.228.8.220:8000/api/api-token-auth/', {
+      const response = await fetch('https://api.nero.lat/api/api-token-auth/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

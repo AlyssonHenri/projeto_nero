@@ -12,7 +12,7 @@ function Detalhes() {
 
     const fetchComentarios = async () => {
         try {
-            const response = await fetch(`http://18.228.8.220:8000/api/postagem/${state.id}/comentarios/`, {
+            const response = await fetch(`https://api.nero.lat/api/postagem/${state.id}/comentarios/`, {
                 headers: {
                     accept: 'application/json',
                     Authorization: `Token ${token}`,
@@ -69,7 +69,7 @@ function Detalhes() {
     return (
         <div className='relative flex flex-col h-screen w-screen bg-[#e9e8e8] overflow-auto'>
             <div className='fixed top-0 flex items-center bg-white w-screen min-h-12 text-xl font-semibold shadow-inner gap-2'>
-                <PiArrowLeftBold className='ml-2' onClick={() => navigate('/home')} size={20} />
+                <PiArrowLeftBold className='ml-2' onClick={() => navigate(-1)} size={20} />
                 <h1 className='shadow-2xl -mt-[2px]'>Detalhes da Postagem</h1>
             </div>
             <div className='fixed bottom-0 start-0'>
@@ -99,7 +99,7 @@ function Detalhes() {
                         </div>
                         <img
                             alt={`Imagem de ${nome}`}
-                            src={`http://18.228.8.220:8000${imagem}`}
+                            src={`https://api.nero.lat/${imagem}`}
                             className='w-full h-full rounded-t-lg'
                         />
                     </div>

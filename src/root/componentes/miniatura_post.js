@@ -34,7 +34,7 @@ function Miniatura({ tipo, nome, status, imagem }) {
             <div className={`relative w-full h-full`}>
                 <img
                     alt={`Imagem de ${nome}`}
-                    src={`http://18.228.8.220:8000${imagem}`}
+                    src={`https://api.nero.lat/${imagem}`}
                     className='w-full h-full rounded-t-lg rounded-ss-xl'
                 />
                 <h1 className={`absolute ${corDeFundo} p-1 rounded-ss-lg rounded-ee-lg text-white top-0 text-sm`}>

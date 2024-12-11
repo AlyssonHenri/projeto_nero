@@ -15,7 +15,7 @@ function Post({ id, nome, status, imagem, perfil, criacao, votos, descricao, nat
 
     const fetchPerfilData = async () => {
         try {
-            const response = await fetch(`http://18.228.8.220:8000/api/usuario/${perfil}/`, {
+            const response = await fetch(`https://api.nero.lat/api/usuario/${perfil}/`, {
                 headers: {
                     'accept': 'application/json',
                     'Authorization': `Token ${token}`,
@@ -66,7 +66,7 @@ function Post({ id, nome, status, imagem, perfil, criacao, votos, descricao, nat
         )
     }
 
-    const fotoPerfil = perfilData?.foto_perfil ? `http://18.228.8.220:8000${perfilData.foto_perfil}` : 'https://via.placeholder.com/150'
+    const fotoPerfil = perfilData?.foto_perfil ? `https://api.nero.lat/${perfilData.foto_perfil}` : 'https://via.placeholder.com/150'
     const nomePerfil = perfilData?.first_name || 'Anônimo'
     
     return (
@@ -93,7 +93,7 @@ function Post({ id, nome, status, imagem, perfil, criacao, votos, descricao, nat
             <div className={`w-full h-full`}>
                 <img 
                     alt={`Imagem de ${nome}`} 
-                    src={`http://18.228.8.220:8000${imagem}` || 'https://via.placeholder.com/150'} 
+                    src={`https://api.nero.lat/${imagem}` || 'https://via.placeholder.com/150'} 
                     className='w-full h-full object-cover' 
                 />
             </div>

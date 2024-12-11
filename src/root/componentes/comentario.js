@@ -7,7 +7,7 @@ function Comentario({ texto, usuario }) {
 
     const fetchPerfilData = async () => {
         try {
-            const response = await fetch(`http://18.228.8.220:8000/api/usuario/${usuario}/`, {
+            const response = await fetch(`https://api.nero.lat/api/usuario/${usuario}/`, {
                 headers: {
                     'accept': 'application/json',
                     'Authorization': `Token ${token}`,
@@ -25,7 +25,7 @@ function Comentario({ texto, usuario }) {
         fetchPerfilData()
     }, [])
 
-    const fotoPerfil = perfilData?.foto_perfil ? `http://18.228.8.220:8000${perfilData.foto_perfil}` : 'https://via.placeholder.com/150'
+    const fotoPerfil = perfilData?.foto_perfil ? `https://api.nero.lat/${perfilData.foto_perfil}` : 'https://via.placeholder.com/150'
     const nomePerfil = perfilData?.first_name || 'Anônimo'
 
     console.log(nomePerfil)
