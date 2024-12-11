@@ -57,7 +57,7 @@ function Homepage() {
 
         const fetchPosts = async () => {
             try {
-                const response = await fetch('http://18.228.8.220:8000/api/feed/', {
+                const response = await fetch('https://api.nero.lat/api/feed/', {
                     headers: {
                         'Accept': 'application/json',
                         'Authorization': `Token ${token}`,
