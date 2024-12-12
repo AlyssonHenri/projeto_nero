@@ -5,12 +5,17 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { RiArrowLeftSLine } from 'react-icons/ri'
 
-delete L.Icon.Default.prototype._getIconUrl
-L.Icon.Default.mergeOptions({
-    iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-    iconUrl: require('leaflet/dist/images/marker-icon.png'),
-    shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
-})
+const iconePersonalizado = () => {
+    const svgIcon = `
+        <svg fill="rgb(48,158,238)" width="30" height="30" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+            <path d="M127.99414,15.9971a88.1046,88.1046,0,0,0-88,88c0,75.29688,80,132.17188,83.40625,134.55469a8.023,8.023,0,0,0,9.1875,0c3.40625-2.38281,83.40625-59.25781,83.40625-134.55469A88.10459,88.10459,0,0,0,127.99414,15.9971ZM128,72a32,32,0,1,1-32,32A31.99909,31.99909,0,0,1,128,72Z"/>
+        </svg>
+    `
+    return new L.Icon({
+        iconUrl: `data:image/svg+xml;base64,${btoa(svgIcon)}`,
+        iconSize: [30, 30],
+    })
+}
 
 function NovoPost() {
     const token = localStorage.getItem('token')
@@ -57,18 +62,48 @@ function NovoPost() {
         }))
     }
 
-    const handleImageChange = (e) => {
+    const handleImageChange = async (e) => {
         const file = e.target.files[0]
         if (file) {
-            setFormData((prev) => ({ ...prev, imagem: file }))
+            try {
+                if (!file.type.startsWith('image/')) {
+                    alert('Por favor, envie um arquivo de imagem.')
+                    return
+                }
+    
+                // Converte para WebP, mais otimizado e deixa tudo padrznizado já
+                const imageBitmap = await createImageBitmap(file)
+                const canvas = document.createElement('canvas')
+                canvas.width = imageBitmap.width
+                canvas.height = imageBitmap.height
+    
+                const ctx = canvas.getContext('2d')
+                ctx.drawImage(imageBitmap, 0, 0)
+    
+                canvas.toBlob(
+                    (blob) => {
+                        if (blob) {
+                            const webpFile = new File([blob], file.name.replace(/\.\w+$/, '.webp'), {
+                                type: 'image/webp',
+                            })
+                            setFormData((prev) => ({ ...prev, imagem: webpFile }))
+                        }
+                    },
+                    'image/webp',
+                    1.0 
+                )
+            } catch (error) {
+                console.error('Erro ao converter a imagem:', error)
+                alert('Ocorreu um erro ao processar a imagem.')
+            }
         }
     }
-
+    
     const centralizarMapa = () => {
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 const { latitude, longitude } = position.coords
-                const latlng =  (latitude, longitude)
+                const latlng = { lat: latitude, lng: longitude }
                 setFormData((prev) => ({ ...prev, geolocalizacao: latlng }))
                 setPinPosition(latlng)
             },
@@ -84,7 +119,7 @@ function NovoPost() {
         { id: '6', text: 'Outro', cor1: 'rgb(242,242,242)', cor2: 'rgb(205,205,205)' },
     ]
 
-    const LocationMarker = () => {
+    const PinPos = () => {
         useMapEvents({
             click(e) {
                 setPinPosition(e.latlng)
@@ -92,16 +127,10 @@ function NovoPost() {
             },
         })
 
-        return pinPosition ? <Marker position={pinPosition}></Marker> : null
+        return pinPosition ? <Marker position={pinPosition} icon={iconePersonalizado()}></Marker> : null
     }
 
     const handleSubmit = async () => {
-        if (!formData.imagem) {
-            setError(true);
-            alert('Por favor, adicione uma imagem.');
-            return;
-        }        
-
         const formDataToSend = new FormData()
         formDataToSend.append('titulo', formData.titulo)
         formDataToSend.append('descricao', formData.descricao)
@@ -198,7 +227,7 @@ function NovoPost() {
                             Adicionar Imagem
                             <input
                                 type="file"
-                                accept="image/*"
+                                accept="capture=camera,image/*"
                                 className="hidden"
                                 onChange={handleImageChange}
                             />
@@ -221,7 +250,7 @@ function NovoPost() {
                                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                 attribution="&copy <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
                             />
-                            <LocationMarker />
+                            <PinPos />
                         </MapContainer>
                     )}
                     <h1 className="-mt-2 text-xs text-gray-400">Clique no mapa para selecionar a localização</h1>
@@ -234,7 +263,7 @@ function NovoPost() {
                 )}
 
                 <div className="flex flex-col justify-around gap-2 mt-4 w-full">
-                    <button className="botao-estilo-2" onClick={handleSubmit}>
+                    <button className="botao-estilo-2 mb-20" onClick={handleSubmit}>
                         Postar
                     </button>
                 </div>
