@@ -69,7 +69,7 @@ function Detalhes() {
 
     return (
         <div className='relative flex flex-col h-screen w-screen bg-[#e9e8e8] overflow-auto'>
-            <div className='fixed top-0 flex items-center bg-white w-screen min-h-12 text-xl font-semibold shadow-inner gap-2'>
+            <div className='fixed top-0 flex items-center bg-white w-screen min-h-12 text-xl font-semibold shadow-inner gap-2 z-20'>
                 <RiArrowLeftSLine className='ml-2' onClick={() => navigate(-1)} size={30} />
                 <h1 className='shadow-2xl -mt-[2px]'>Detalhes da Postagem</h1>
             </div>
@@ -133,7 +133,7 @@ function Detalhes() {
                         Avaliar
                     </button>
                 </div>
-                <h1 className='text-lg font-semibold mt-4 mb-20'>Atividades Recentes</h1>
+                <h1 className='text-lg font-semibold mt-4 mb-32'>Atividades Recentes</h1>
             </div>
         </div>
     );
