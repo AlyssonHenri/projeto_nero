@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { RiArrowLeftSLine } from 'react-icons/ri'
 import { useNavigate } from 'react-router-dom'
 
 function Cadastro() {
@@ -116,6 +117,7 @@ function Cadastro() {
     <div className="flex flex-col h-screen w-[95%] ml-3">
       <form>
         <div className="fixed top-0 flex items-center -ml-3 bg-white w-screen min-h-12 text-xl font-semibold shadow-xl gap-2">
+          <RiArrowLeftSLine className='ml-2' onClick={() => navigate(-1)} size={30} />
           <h1 className="shadow-2xl -mt-[2px] ml-3">Cadastro</h1>
         </div>
 
