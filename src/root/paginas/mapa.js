@@ -86,6 +86,7 @@ function Homepage() {
                     }).filter(post => post !== null)
 
                     setPostagens(postagensFormatadas)
+                    console.log('Postagens carregadas:', postagensFormatadas)
                 } else {
                     console.error(`Erro ao carregar postagens: ${response.status}`)
                 }
