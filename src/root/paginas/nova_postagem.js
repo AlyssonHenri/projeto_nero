@@ -67,9 +67,8 @@ function NovoPost() {
     const centralizarMapa = () => {
         navigator.geolocation.getCurrentPosition(
             (position) => {
-                console.log(position)
                 const { latitude, longitude } = position.coords
-                const latlng = { lat: latitude, lng: longitude }
+                const latlng =  (latitude, longitude)
                 setFormData((prev) => ({ ...prev, geolocalizacao: latlng }))
                 setPinPosition(latlng)
             },
@@ -97,6 +96,12 @@ function NovoPost() {
     }
 
     const handleSubmit = async () => {
+        if (!formData.imagem) {
+            setError(true);
+            alert('Por favor, adicione uma imagem.');
+            return;
+        }        
+
         const formDataToSend = new FormData()
         formDataToSend.append('titulo', formData.titulo)
         formDataToSend.append('descricao', formData.descricao)
