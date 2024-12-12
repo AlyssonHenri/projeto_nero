@@ -30,18 +30,18 @@ function Miniatura({ tipo, nome, status, imagem }) {
     const { emoji, texto } = statusInfo[status.toLowerCase()] || statusInfo.pendente
 
     return (
-        <div className='flex flex-col w-[48%] min-h-48'>
+        <div className='relative flex flex-col min-w-[48%] max-w-[48%] h-48'>
             <div className={`relative w-full h-full`}>
                 <img
                     alt={`Imagem de ${nome}`}
                     src={`https://api.nero.lat/${imagem}`}
-                    className='w-full h-full rounded-t-lg rounded-ss-xl'
+                    className='w-full h-[150px] object-cover rounded-t-lg rounded-ss-xl overflow-hidden'
                 />
                 <h1 className={`absolute ${corDeFundo} p-1 rounded-ss-lg rounded-ee-lg text-white top-0 text-sm`}>
                     {textoTipo}
                 </h1>
             </div>
-            <div className='bg-white px-3 flex flex-col font-semibold rounded-b-lg'>
+            <div className='bg-white absolute bottom-0 w-full px-3 flex flex-col font-semibold rounded-b-lg'>
                 <h1 className='text-sm mt-1 truncate'>{nome}</h1>
                 <div className='flex items-center mb-1'>
                     <h1>{emoji}</h1>
