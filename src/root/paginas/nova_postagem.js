@@ -147,8 +147,6 @@ function NovoPost() {
                     <h1 className="font-semibold">Titulo</h1>
                     <input
                         type="text"
-                        accept="image/*"
-                        capture="environment"
                         name="titulo"
                         className="input-generico w-full"
                         placeholder="Insira o titulo do problema"
