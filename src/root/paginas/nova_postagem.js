@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
@@ -24,6 +24,30 @@ function NovoPost() {
         geolocalizacao: null,
         natureza: ''
     })
+    const [carregandoLocalizacao, setCarregandoLocalizacao] = useState(true)
+    const [erroLocalizacao, setErroLocalizacao] = useState(null)
+    const [pinPosition, setPinPosition] = useState(null)
+
+    useEffect(() => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude } = position.coords
+                    const latlng = { lat: latitude, lng: longitude }
+                    setFormData((prev) => ({ ...prev, geolocalizacao: latlng }))
+                    setCarregandoLocalizacao(false)
+                },
+                (err) => {
+                    setErroLocalizacao("Não foi possível acessar sua localização.")
+                    console.error("Erro ao obter localização:", err)
+                    setCarregandoLocalizacao(false)
+                }
+            )
+        } else {
+            setErroLocalizacao("Geolocalização não é suportada pelo seu navegador.")
+            setCarregandoLocalizacao(false)
+        }
+    }, [])
 
     const handleChange = (e) => {
         const { name, value } = e.target
@@ -49,6 +73,7 @@ function NovoPost() {
                     const latlng = { lat: latitude, lng: longitude }
                     map.setView(latlng, 13)
                     setFormData((prev) => ({ ...prev, geolocalizacao: latlng }))
+                    setPinPosition(latlng)
                 },
                 () => {
                     alert('Não foi possível obter sua localização atual.')
@@ -69,19 +94,14 @@ function NovoPost() {
     ]
 
     const LocationMarker = () => {
-        const [position, setPosition] = useState(null)
-        const map = useMapEvents({
+        useMapEvents({
             click(e) {
-                setPosition(e.latlng)
-                setFormData((prev) => ({ ...prev, geolocalizacao: e.latlng }))
-            },
-            locationfound(e) {
-                setPosition(e.latlng)
+                setPinPosition(e.latlng)
                 setFormData((prev) => ({ ...prev, geolocalizacao: e.latlng }))
             },
         })
 
-        return position ? <Marker position={position}></Marker> : null
+        return pinPosition ? <Marker position={pinPosition}></Marker> : null
     }
 
     const handleSubmit = async () => {
@@ -187,20 +207,26 @@ function NovoPost() {
                             />
                         </label>
                     </div>
-                    <MapContainer
-                        center={[-23.55052, -46.633308]}
-                        zoom={13}
-                        style={{ height: "200px", width: "100%" }}
-                        whenCreated={(mapInstance) => {
-                            mapRef.current = mapInstance
-                        }}
-                    >
-                        <TileLayer
-                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                            attribution="&copy <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
-                        />
-                        <LocationMarker />
-                    </MapContainer>
+                    {carregandoLocalizacao ? (
+                        <p className="text-lg font-medium">Carregando localização...</p>
+                    ) : erroLocalizacao ? (
+                        <p className="text-lg text-red-600">{erroLocalizacao}</p>
+                    ) : (
+                        <MapContainer
+                            center={formData.geolocalizacao || [-23.55052, -46.633308]}
+                            zoom={13}
+                            style={{ height: "200px", width: "100%" }}
+                            whenCreated={(mapInstance) => {
+                                mapRef.current = mapInstance
+                            }}
+                        >
+                            <TileLayer
+                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                attribution="&copy <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
+                            />
+                            <LocationMarker />
+                        </MapContainer>
+                    )}
                     <h1 className="-mt-2 text-xs text-gray-400">Clique no mapa para selecionar a localização</h1>
                 </div>
 
