@@ -64,24 +64,16 @@ function NovoPost() {
         }
     }
 
-    const centerMapOnLocation = () => {
-        const map = mapRef.current
-        if (map && navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const { latitude, longitude } = position.coords
-                    const latlng = { lat: latitude, lng: longitude }
-                    map.setView(latlng, 13)
-                    setFormData((prev) => ({ ...prev, geolocalizacao: latlng }))
-                    setPinPosition(latlng)
-                },
-                () => {
-                    alert('Não foi possível obter sua localização atual.')
-                }
-            )
-        } else {
-            alert('Geolocalização não suportada no seu navegador ou mapa não disponível.')
-        }
+    const centralizarMapa = () => {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                console.log(position)
+                const { latitude, longitude } = position.coords
+                const latlng = { lat: latitude, lng: longitude }
+                setFormData((prev) => ({ ...prev, geolocalizacao: latlng }))
+                setPinPosition(latlng)
+            },
+        )
     }
 
     const natureza = [
@@ -193,7 +185,7 @@ function NovoPost() {
                     <div className="flex gap-2 mb-2">
                         <button
                             className="botao-estilo-1"
-                            onClick={centerMapOnLocation}
+                            onClick={centralizarMapa}
                         >
                             Usar localização atual
                         </button>
