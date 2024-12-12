@@ -3,6 +3,7 @@ import { isBrowser } from 'react-device-detect'
 import Miniatura from '../componentes/miniatura_post'
 import Post from '../componentes/post'
 import NavBar from '../componentes/nav_bar'
+import { useNavigate } from 'react-router-dom'
 
 function SkeletonMiniatura() {
     return (
@@ -41,11 +42,12 @@ function SkeletonPost() {
 }
 
 function Homepage() {
+    const token = localStorage.getItem('token')
+    const navigate = useNavigate()
     const [miniaturas, setMiniaturas] = useState([])
     const [posts, setPosts] = useState([])
     const [loadingMiniaturas, setLoadingMiniaturas] = useState(true)
     const [loadingPosts, setLoadingPosts] = useState(true)
-    const token = localStorage.getItem('token')
 
     const fetchMinis = async () => {
         try {
@@ -80,7 +82,7 @@ function Homepage() {
 
             if (response.ok) {
                 const data = await response.json()
-                setPosts(data)
+                setPosts(data.reverse())
             } else {
                 console.error(`Erro ao carregar miniaturas: ${response.status}`)
             }
@@ -126,7 +128,7 @@ function Homepage() {
                               />
                           ))}
                 </div>
-                <button className='botao-estilo-2 mt-2'>Criar Postagem</button>
+                <button className='botao-estilo-2 mt-2' onClick={() => navigate('/post/novo')}>Criar Postagem</button>
                 <h1 className='font-semibold text-xl mb-3 mt-5'>Feed de Postagens</h1>
                 <div className='flex flex-col overflow-x-auto gap-4 pb-3 mb-16'>
                     {loadingPosts

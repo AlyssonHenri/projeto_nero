@@ -6,6 +6,7 @@ import { PiArrowLeftBold } from "react-icons/pi"
 import { useNavigate } from "react-router-dom"
 import "leaflet/dist/leaflet.css"
 import L from "leaflet"
+import { RiArrowLeftSLine } from "react-icons/ri"
 
 function Homepage() {
     const token = localStorage.getItem('token')
@@ -127,7 +128,7 @@ function Homepage() {
     return (
         <div className="relative h-full w-screen bg-[#e9e8e8]">
             <div className='fixed top-0 flex items-center bg-white w-screen min-h-12 text-xl font-semibold shadow-inner gap-2'>
-                <PiArrowLeftBold className='ml-2' onClick={() => navigate('/home')} size={20} />
+                <RiArrowLeftSLine className='ml-2' onClick={() => navigate(-1)} size={30} />
                 <h1 className="font-semibold text-xl -mt-[1px]">Localizar</h1>
             </div>
             <div className="bottom-0 start-0 fixed">
