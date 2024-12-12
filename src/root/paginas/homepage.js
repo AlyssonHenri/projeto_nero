@@ -113,7 +113,7 @@ function Homepage() {
             </div>
             <div className='flex flex-col p-3'>
                 <h1 className='font-semibold text-xl mb-3'>Minhas Postagens</h1>
-                <div className='flex overflow-x-auto gap-4 pb-3'>
+                <div className='flex w-full overflow-x-auto gap-4 pb-3'>
                     {loadingMiniaturas
                         ? Array.from({ length: 2 }).map((_, index) => (
                               <SkeletonMiniatura key={index} />

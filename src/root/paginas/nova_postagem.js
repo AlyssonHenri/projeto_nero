@@ -103,7 +103,7 @@ function NovoPost() {
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 const { latitude, longitude } = position.coords
-                const latlng = { lat: latitude, lng: longitude }
+                const latlng = ( latitude, longitude )
                 setFormData((prev) => ({ ...prev, geolocalizacao: latlng }))
                 setPinPosition(latlng)
             },
