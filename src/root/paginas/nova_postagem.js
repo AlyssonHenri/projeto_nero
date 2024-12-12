@@ -90,7 +90,7 @@ function NovoPost() {
                         }
                     },
                     'image/webp',
-                    1.0 
+                    0.7 
                 )
             } catch (error) {
                 console.error('Erro ao converter a imagem:', error)
@@ -103,8 +103,8 @@ function NovoPost() {
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 const { latitude, longitude } = position.coords
-                const latlng = ( latitude, longitude )
-                setFormData((prev) => ({ ...prev, geolocalizacao: latlng }))
+                const latlng = { lat: latitude, lng: longitude }
+                setFormData((prev) => ({ ...prev, geolocalizacao: (latlng.lat, latlng.lng) }))
                 setPinPosition(latlng)
             },
         )
