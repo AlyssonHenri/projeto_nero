@@ -21,7 +21,7 @@ function Login() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          username: login.toLowerCase(),
+          username: login,
           password: senha,
         }),
       })
@@ -56,7 +56,7 @@ function Login() {
           <input
             type='email'
             className='input-generico w-full'
-            placeholder='Entre com seu e-mail'
+            placeholder='Entre com seu nome de usuário'
             value={login}
             onChange={(e) => setLogin(e.target.value)}
           />
