@@ -84,10 +84,10 @@ function Homepage() {
                 const data = await response.json()
                 setPosts(data.reverse())
             } else {
-                console.error(`Erro ao carregar miniaturas: ${response.status}`)
+                console.error(`Erro ao carregar posts: ${response.status}`)
             }
         } catch (error) {
-            console.error('Erro de conexão ao carregar miniaturas:', error)
+            console.error('Erro de conexão ao carregar posts:', error)
         } finally {
             setLoadingPosts(false)
         }
@@ -96,6 +96,12 @@ function Homepage() {
     useEffect(() => {
         fetchMinis()
         fetchPosts()
+
+        const interval = setInterval(() => {
+            fetchPosts()
+        }, 30000) // Atualiza a cada 30 segundos
+
+        return () => clearInterval(interval) // Limpa o intervalo ao desmontar
     }, [])
 
     if (isBrowser) {
@@ -130,7 +136,7 @@ function Homepage() {
                 </div>
                 <button className='botao-estilo-2 mt-2' onClick={() => navigate('/post/novo')}>Criar Postagem</button>
                 <h1 className='font-semibold text-xl mb-3 mt-5'>Feed de Postagens</h1>
-                <div className='flex flex-col overflow-x-auto gap-4 pb-3 mb-16'>
+                <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 pb-3 mb-16'>
                     {loadingPosts
                         ? Array.from({ length: 3 }).map((_, index) => (
                               <SkeletonPost key={index} />
