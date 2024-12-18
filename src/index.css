@@ -154,3 +154,7 @@
 .leaflet-tooltip-bottom.myCSSClass::before {
   border-bottom-color: transparent !important;
 }
+
+.leaflet-container {
+  z-index: 1;
+}

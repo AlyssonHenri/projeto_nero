@@ -32,6 +32,8 @@ function NovoPost() {
     const [carregandoLocalizacao, setCarregandoLocalizacao] = useState(true)
     const [erroLocalizacao, setErroLocalizacao] = useState(null)
     const [pinPosition, setPinPosition] = useState(null)
+    const [imagemPreview, setImagemPreview] = useState(null)
+    const [imagemModalVisivel, setImagemModalVisivel] = useState(false)
 
     useEffect(() => {
         if (navigator.geolocation) {
@@ -70,16 +72,23 @@ function NovoPost() {
                     alert('Por favor, envie um arquivo de imagem.')
                     return
                 }
-    
-                // Converte para WebP, mais otimizado e deixa tudo padrznizado já
+
+                // Exibe a imagem para preview
+                const reader = new FileReader()
+                reader.onload = () => {
+                    setImagemPreview(reader.result)
+                }
+                reader.readAsDataURL(file)
+
+                // Converte para WebP
                 const imageBitmap = await createImageBitmap(file)
                 const canvas = document.createElement('canvas')
                 canvas.width = imageBitmap.width
                 canvas.height = imageBitmap.height
-    
+
                 const ctx = canvas.getContext('2d')
                 ctx.drawImage(imageBitmap, 0, 0)
-    
+
                 canvas.toBlob(
                     (blob) => {
                         if (blob) {
@@ -90,7 +99,7 @@ function NovoPost() {
                         }
                     },
                     'image/webp',
-                    0.7 
+                    0.7
                 )
             } catch (error) {
                 console.error('Erro ao converter a imagem:', error)
@@ -98,13 +107,13 @@ function NovoPost() {
             }
         }
     }
-    
+
     const centralizarMapa = () => {
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 const { latitude, longitude } = position.coords
                 const latlng = { lat: latitude, lng: longitude }
-                setFormData((prev) => ({ ...prev, geolocalizacao: (latlng.lat, latlng.lng) }))
+                setFormData((prev) => ({ ...prev, geolocalizacao: latlng }))
                 setPinPosition(latlng)
             },
         )
@@ -141,7 +150,7 @@ function NovoPost() {
         if (formData.geolocalizacao) {
             formDataToSend.append('geolocalizacao', JSON.stringify(formData.geolocalizacao))
         }
-    
+
         try {
             const response = await fetch('https://api.nero.lat/api/postagem/', {
                 method: 'POST',
@@ -150,7 +159,7 @@ function NovoPost() {
                 },
                 body: formDataToSend,
             })
-    
+
             if (response.ok) {
                 alert('Postagem criada com sucesso!')
                 navigate('/home')
@@ -203,7 +212,7 @@ function NovoPost() {
                         {natureza.map((item) => (
                             <button
                                 key={item.id}
-                                className="botao-estilo-5 text-white rounded-md"
+                                className={`botao-estilo-5 text-white rounded-md ${formData.natureza === item.id ? 'border border-black' : ''}`}
                                 style={{ background: `linear-gradient(to bottom, ${item.cor1}, ${item.cor2}` }}
                                 onClick={() => setFormData((prev) => ({ ...prev, natureza: item.id }))}
                             >
@@ -225,12 +234,21 @@ function NovoPost() {
                         </button>
                         <label className="botao-estilo-2 text-center cursor-pointer">
                             Adicionar Imagem
-                            <input
-                                type="file"
-                                accept="capture=camera,image/*"
-                                className="hidden"
-                                onChange={handleImageChange}
-                            />
+                            {imagemPreview ? 
+                                <button
+                                    type="file"
+                                    accept="capture=camera,image/*"
+                                    className="hidden"
+                                    onClick={() => setImagemModalVisivel(true)}
+                                /> 
+                            :
+                                <input
+                                    type="file"
+                                    accept="capture=camera,image/*"
+                                    className="hidden"
+                                    onChange={handleImageChange}
+                                />
+                            }
                         </label>
                     </div>
                     {carregandoLocalizacao ? (
@@ -268,6 +286,31 @@ function NovoPost() {
                     </button>
                 </div>
             </div>
+
+            {imagemModalVisivel && (
+                <div className="absolute inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+                    <div className="bg-white p-4 rounded-lg mx-5">
+                        <img src={imagemPreview} alt="Pré-visualização" className="max-w-full max-h-[80vh]" />
+                        <div className='w-full flex flex-col'>
+                            <label className="botao-estilo-1 mt-3 text-center cursor-pointer">
+                                Nova Imagem
+                                <input
+                                    type="file"
+                                    accept="capture=camera,image/*"
+                                    className="hidden"
+                                    onChange={handleImageChange}
+                                />
+                            </label>
+                            <button
+                                className="mt-2 botao-estilo-1"
+                                onClick={() => setImagemModalVisivel(false)}
+                            >
+                                Fechar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

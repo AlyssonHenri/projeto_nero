@@ -70,7 +70,7 @@ function Post({ id, nome, status, imagem, perfil, criacao, votos, descricao, nat
     const nomePerfil = perfilData?.first_name || 'Anônimo'
     
     return (
-        <div className='flex flex-col min-w-48 min-h-48'>
+        <div className='flex flex-col w-full max-w-[400px]  bg-white rounded-lg overflow-hidden shadow-md'>
             <div className='flex justify-between bg-white rounded-t-lg p-3'>
                 <div className='flex gap-2'>
                     <img 
