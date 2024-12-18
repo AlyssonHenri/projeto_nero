@@ -34,6 +34,16 @@ function NovoPost() {
     const [pinPosition, setPinPosition] = useState(null)
     const [imagemPreview, setImagemPreview] = useState(null)
     const [imagemModalVisivel, setImagemModalVisivel] = useState(false)
+    const [dadosImagem, setDadosImagem] = useState(null);
+
+    const natureza = [
+        { id: '1', text: 'Infraestrutura', cor1: 'rgb(48,158,238)', cor2: 'rgb(75,136,181)' },
+        { id: '2', text: 'Iluminação', cor1: 'rgb(243,221,51)', cor2: 'rgb(175,160,51)' },
+        { id: '3', text: 'Coleta de Lixo', cor1: 'rgb(48,163,56)', cor2: 'rgb(48,86,50)' },
+        { id: '4', text: 'Saneamento', cor1: 'rgb(173,100,48)', cor2: 'rgb(105,71,48)' },
+        { id: '5', text: 'Transito', cor1: 'rgb(191,191,191)', cor2: 'rgb(122,122,122)' },
+        { id: '6', text: 'Outro', cor1: 'rgb(242,242,242)', cor2: 'rgb(205,205,205)' },
+    ]
 
     useEffect(() => {
         if (navigator.geolocation) {
@@ -65,48 +75,18 @@ function NovoPost() {
     }
 
     const handleImageChange = async (e) => {
-        const file = e.target.files[0]
+        const file = e.target.files && e.target.files[0];
         if (file) {
-            try {
-                if (!file.type.startsWith('image/')) {
-                    alert('Por favor, envie um arquivo de imagem.')
-                    return
-                }
-
-                // Exibe a imagem para preview
-                const reader = new FileReader()
-                reader.onload = () => {
-                    setImagemPreview(reader.result)
-                }
-                reader.readAsDataURL(file)
-
-                // Converte para WebP
-                const imageBitmap = await createImageBitmap(file)
-                const canvas = document.createElement('canvas')
-                canvas.width = imageBitmap.width
-                canvas.height = imageBitmap.height
-
-                const ctx = canvas.getContext('2d')
-                ctx.drawImage(imageBitmap, 0, 0)
-
-                canvas.toBlob(
-                    (blob) => {
-                        if (blob) {
-                            const webpFile = new File([blob], file.name.replace(/\.\w+$/, '.webp'), {
-                                type: 'image/webp',
-                            })
-                            setFormData((prev) => ({ ...prev, imagem: webpFile }))
-                        }
-                    },
-                    'image/webp',
-                    0.7
-                )
-            } catch (error) {
-                console.error('Erro ao converter a imagem:', error)
-                alert('Ocorreu um erro ao processar a imagem.')
-            }
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setDadosImagem({
+              previsaoImagem: reader.result,
+              arquivoImagem: file,
+            });
+          };
+          reader.readAsDataURL(file);
         }
-    }
+    };
 
     const centralizarMapa = () => {
         navigator.geolocation.getCurrentPosition(
@@ -118,15 +98,6 @@ function NovoPost() {
             },
         )
     }
-
-    const natureza = [
-        { id: '1', text: 'Infraestrutura', cor1: 'rgb(48,158,238)', cor2: 'rgb(75,136,181)' },
-        { id: '2', text: 'Iluminação', cor1: 'rgb(243,221,51)', cor2: 'rgb(175,160,51)' },
-        { id: '3', text: 'Coleta de Lixo', cor1: 'rgb(48,163,56)', cor2: 'rgb(48,86,50)' },
-        { id: '4', text: 'Saneamento', cor1: 'rgb(173,100,48)', cor2: 'rgb(105,71,48)' },
-        { id: '5', text: 'Transito', cor1: 'rgb(191,191,191)', cor2: 'rgb(122,122,122)' },
-        { id: '6', text: 'Outro', cor1: 'rgb(242,242,242)', cor2: 'rgb(205,205,205)' },
-    ]
 
     const PinPos = () => {
         useMapEvents({
@@ -145,7 +116,7 @@ function NovoPost() {
         formDataToSend.append('descricao', formData.descricao)
         formDataToSend.append('natureza', formData.natureza)
         if (formData.imagem) {
-            formDataToSend.append('imagem', formData.imagem)
+            formData.append("imagem", dadosImagem.arquivoImagem);
         }
         if (formData.geolocalizacao) {
             formDataToSend.append('geolocalizacao', JSON.stringify(formData.geolocalizacao))
@@ -234,7 +205,7 @@ function NovoPost() {
                         </button>
                         <label className="botao-estilo-2 text-center cursor-pointer">
                             Adicionar Imagem
-                            {imagemPreview ? 
+                            {dadosImagem ? 
                                 <button
                                     type="file"
                                     accept="capture=camera,image/*"
@@ -290,7 +261,7 @@ function NovoPost() {
             {imagemModalVisivel && (
                 <div className="absolute inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
                     <div className="bg-white p-4 rounded-lg mx-5">
-                        <img src={imagemPreview} alt="Pré-visualização" className="max-w-full max-h-[80vh]" />
+                        <img src={dadosImagem.previsaoImagem} alt="Pré-visualização" className="max-w-full max-h-[80vh]" />
                         <div className='w-full flex flex-col'>
                             <label className="botao-estilo-1 mt-3 text-center cursor-pointer">
                                 Nova Imagem
