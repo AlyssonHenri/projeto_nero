@@ -111,17 +111,25 @@ function NovoPost() {
     }
 
     const handleSubmit = async () => {
-        const formDataToSend = new FormData()
-        formDataToSend.append('titulo', formData.titulo)
-        formDataToSend.append('descricao', formData.descricao)
-        formDataToSend.append('natureza', formData.natureza)
-        if (formData.imagem) {
-            formData.append("imagem", dadosImagem.arquivoImagem);
+        if (!formData.titulo || !formData.descricao || !formData.natureza) {
+            alert("Por favor, preencha todos os campos obrigatórios.");
+            return;
         }
+    
+        const formDataToSend = new FormData();
+        formDataToSend.append('titulo', formData.titulo);
+        formDataToSend.append('descricao', formData.descricao);
+        formDataToSend.append('natureza', formData.natureza);
+    
+        if (dadosImagem?.arquivoImagem) {
+            formDataToSend.append("imagem", dadosImagem.arquivoImagem);
+        }
+        
         if (formData.geolocalizacao) {
-            formDataToSend.append('geolocalizacao', JSON.stringify(formData.geolocalizacao))
+            const { lat, lng } = formData.geolocalizacao;
+            formDataToSend.append('geolocalizacao', `${lat},${lng}`);
         }
-
+    
         try {
             const response = await fetch('https://api.nero.lat/api/postagem/', {
                 method: 'POST',
@@ -129,21 +137,22 @@ function NovoPost() {
                     'Authorization': `Token ${token}`,
                 },
                 body: formDataToSend,
-            })
-
+            });
+    
             if (response.ok) {
-                alert('Postagem criada com sucesso!')
-                navigate('/home')
+                alert('Postagem criada com sucesso!');
+                navigate('/home');
             } else {
-                setError(true)
-                alert('Erro ao criar postagem.')
+                const errorData = await response.json();
+                console.error("Erro da API:", errorData);
+                alert('Erro ao criar postagem.');
             }
         } catch (error) {
-            setError(true)
-            alert('Erro ao criar postagem.')
+            console.error("Erro na requisição:", error);
+            alert('Erro ao criar postagem.');
         }
-    }
-
+    };
+    
     return (
         <div className="flex flex-col h-screen bg-[#e9e8e8]">
             <div className='fixed top-0 flex items-center bg-white w-screen min-h-12 text-xl font-semibold shadow-inner gap-2'>
