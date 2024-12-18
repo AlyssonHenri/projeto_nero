@@ -4,7 +4,6 @@ import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { RiArrowLeftSLine } from 'react-icons/ri'
-import { FaImage } from 'react-icons/fa'
 
 const iconePersonalizado = () => {
     const svgIcon = `
@@ -235,16 +234,22 @@ function NovoPost() {
                         </button>
                         <label className="botao-estilo-2 text-center cursor-pointer">
                             Adicionar Imagem
-                            <input
-                                type="file"
-                                accept="capture=camera,image/*"
-                                className="hidden"
-                                onChange={handleImageChange}
-                            />
+                            {imagemPreview ? 
+                                <button
+                                    type="file"
+                                    accept="capture=camera,image/*"
+                                    className="hidden"
+                                    onClick={() => setImagemModalVisivel(true)}
+                                /> 
+                            :
+                                <input
+                                    type="file"
+                                    accept="capture=camera,image/*"
+                                    className="hidden"
+                                    onChange={handleImageChange}
+                                />
+                            }
                         </label>
-                        {imagemPreview && (
-                            <FaImage size={40} onClick={() => setImagemModalVisivel(true)}/>
-                        )}
                     </div>
                     {carregandoLocalizacao ? (
                         <p className="text-lg font-medium">Carregando localização...</p>
@@ -286,12 +291,23 @@ function NovoPost() {
                 <div className="absolute inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
                     <div className="bg-white p-4 rounded-lg mx-5">
                         <img src={imagemPreview} alt="Pré-visualização" className="max-w-full max-h-[80vh]" />
-                        <button
-                            className="mt-4 botao-estilo-1"
-                            onClick={() => setImagemModalVisivel(false)}
-                        >
-                            Fechar
-                        </button>
+                        <div className='w-full flex flex-col'>
+                            <label className="botao-estilo-1 mt-3 text-center cursor-pointer">
+                                Nova Imagem
+                                <input
+                                    type="file"
+                                    accept="capture=camera,image/*"
+                                    className="hidden"
+                                    onChange={handleImageChange}
+                                />
+                            </label>
+                            <button
+                                className="mt-2 botao-estilo-1"
+                                onClick={() => setImagemModalVisivel(false)}
+                            >
+                                Fechar
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
