@@ -32,7 +32,6 @@ function NovoPost() {
     const [carregandoLocalizacao, setCarregandoLocalizacao] = useState(true)
     const [erroLocalizacao, setErroLocalizacao] = useState(null)
     const [pinPosition, setPinPosition] = useState(null)
-    const [imagemPreview, setImagemPreview] = useState(null)
     const [imagemModalVisivel, setImagemModalVisivel] = useState(false)
     const [dadosImagem, setDadosImagem] = useState(null);
 
@@ -217,14 +216,14 @@ function NovoPost() {
                             {dadosImagem ? 
                                 <button
                                     type="file"
-                                    accept="capture=camera,image/*"
+                                    accept="image/*"
                                     className="hidden"
                                     onClick={() => setImagemModalVisivel(true)}
                                 /> 
                             :
                                 <input
                                     type="file"
-                                    accept="capture=camera,image/*"
+                                    accept="image/*"
                                     className="hidden"
                                     onChange={handleImageChange}
                                 />
@@ -276,7 +275,7 @@ function NovoPost() {
                                 Nova Imagem
                                 <input
                                     type="file"
-                                    accept="capture=camera,image/*"
+                                    accept="image/*"
                                     className="hidden"
                                     onChange={handleImageChange}
                                 />

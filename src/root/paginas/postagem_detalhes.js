@@ -1,15 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import NavBar from '../componentes/nav_bar';
-import Comentario from '../componentes/comentario';
-import { PiArrowLeftBold } from 'react-icons/pi';
-import { RiArrowLeftSLine } from 'react-icons/ri';
+// src/pages/Detalhes.js
+
+import React, { useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+import NavBar from '../componentes/nav_bar'
+import Comentario from '../componentes/comentario'
+import { RiArrowLeftSLine } from 'react-icons/ri'
+import { PiSirenDuotone } from 'react-icons/pi'
+import { Modal, Box, Button, TextField, Typography } from '@mui/material'
 
 function Detalhes() {
-    const navigate = useNavigate();
-    const { state } = useLocation();
-    const [comentarios, setComentarios] = useState([]);
-    const token = localStorage.getItem('token');
+    const navigate = useNavigate()
+    const { state } = useLocation()
+    const [comentarios, setComentarios] = useState([])
+    const [showComentarioModal, setShowComentarioModal] = useState(false)
+    const [showAvaliacaoModal, setShowAvaliacaoModal] = useState(false)
+    const [novoComentario, setNovoComentario] = useState("")
+    const [avaliacao, setAvaliacao] = useState(0)
+    const token = localStorage.getItem('token')
 
     const fetchComentarios = async () => {
         try {
@@ -18,22 +25,74 @@ function Detalhes() {
                     accept: 'application/json',
                     Authorization: `Token ${token}`,
                 },
-            });
-            const data = await response.json();
-            setComentarios(data);
+            })
+            const data = await response.json()
+            setComentarios(data)
         } catch (error) {
-            console.error('Erro ao buscar os comentários:', error);
+            console.error('Erro ao buscar os comentários:', error)
         }
-    };
+    }
+
+    const enviarComentario = async () => {
+        try {
+            const formData = new FormData()
+            formData.append('texto', novoComentario)
+            formData.append('postagem', state.id)
+
+            const response = await fetch(`https://api.nero.lat/api/postagem/comentario/`, {
+                method: 'POST',
+                headers: {
+                    accept: 'application/json',
+                    Authorization: `Token ${token}`,
+                    'X-CSRFTOKEN': 'fMzQz6BvCDA8wLYuARZc6BJucai9T3KF05sYkqZlh8yWcb4j55kFI9jiQTXT3bR8',
+                },
+                body: formData,
+            })
+            if (response.ok) {
+                setShowComentarioModal(false)
+                setNovoComentario("")
+                fetchComentarios()
+            } else {
+                console.error('Erro ao enviar comentário:', await response.text())
+            }
+        } catch (error) {
+            console.error('Erro ao enviar comentário:', error)
+        }
+    }
+
+    const enviarAvaliacao = async () => {
+        try {
+            const formData = new FormData()
+            formData.append('avaliacao', avaliacao)
+
+            const response = await fetch(`https://api.nero.lat/api/postagem/${state.id}/avaliar/`, {
+                method: 'POST',
+                headers: {
+                    accept: 'application/json',
+                    Authorization: `Token ${token}`,
+                    'X-CSRFTOKEN': 'fMzQz6BvCDA8wLYuARZc6BJucai9T3KF05sYkqZlh8yWcb4j55kFI9jiQTXT3bR8',
+                },
+                body: formData,
+            })
+            if (response.ok) {
+                setShowAvaliacaoModal(false)
+                setAvaliacao(0)
+            } else {
+                console.error('Erro ao enviar avaliação:', await response.text())
+            }
+        } catch (error) {
+            console.error('Erro ao enviar avaliação:', error)
+        }
+    }
 
     useEffect(() => {
         if (state?.id) {
-            fetchComentarios();
+            fetchComentarios()
         }
-    }, [state]);
+    }, [state])
 
     if (!state) {
-        return <div>Dados não encontrados</div>;
+        return <div>Dados não encontrados</div>
     }
 
     const {
@@ -47,13 +106,13 @@ function Detalhes() {
         votos,
         descricao,
         natureza,
-    } = state;
+    } = state
 
     const statusMap = {
         "1": "pendente",
         "2": "resolvido",
         "3": "falso",
-    };
+    }
 
     const naturezaMap = {
         "1": "infraestrutura",
@@ -62,10 +121,22 @@ function Detalhes() {
         "4": "saneamento",
         "5": "trânsito",
         "6": "outro",
-    };
+    }
 
-    const statusConvertido = statusMap[status] || "não especificado";
-    const naturezaConvertida = naturezaMap[natureza] || "não especificado";
+    const statusConvertido = statusMap[status] || "não especificado"
+    const naturezaConvertida = naturezaMap[natureza] || "não especificado"
+
+    const modalStyle = {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 400,
+        bgcolor: 'background.paper',
+        boxShadow: 24,
+        p: 4,
+        borderRadius: 2,
+    }
 
     return (
         <div className='relative flex flex-col h-screen w-screen bg-[#e9e8e8] overflow-auto'>
@@ -115,28 +186,82 @@ function Detalhes() {
                 <h1 className='text-lg font-semibold mt-4'>Comentários</h1>
                 <div className='flex overflow-auto gap-2'>
                     {comentarios.map((comentario) => (
-                        <div className='h-full w-full mb-3'>
+                        <div key={comentario.id} className='h-full w-full mb-3'>
                             <Comentario
-                                key={comentario.id}
                                 texto={comentario.texto}
                                 usuario={comentario.usuario}
                             />
                         </div>
                     ))}
                 </div>
-                <h1 className='text-lg font-semibold mt-2'>Comentários</h1>
-                <div className='flex gap-2 mt-1'>
-                    <button className='botao-estilo-1'>
+                <div className='flex gap-2 mt-4 mb-[100px]'>
+                    <button className='botao-estilo-1' onClick={() => setShowComentarioModal(true)}>
                         Comentar
                     </button>
-                    <button className='botao-estilo-2'>
+                    <button className='botao-estilo-2' onClick={() => setShowAvaliacaoModal(true)}>
                         Avaliar
                     </button>
                 </div>
-                <h1 className='text-lg font-semibold mt-4 mb-32'>Atividades Recentes</h1>
             </div>
+            {/* Modal de Comentários */}
+            <Modal open={showComentarioModal} onClose={() => setShowComentarioModal(false)}>
+                <Box
+                    sx={{
+                        ...modalStyle,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
+                >
+                    <TextField
+                        fullWidth
+                        multiline
+                        rows={4}
+                        value={novoComentario}
+                        onChange={(e) => setNovoComentario(e.target.value)}
+                        placeholder="Escreva seu comentário aqui"
+                        margin="normal"
+                    />
+                    <div style={{ alignSelf: 'flex-end', marginTop: '16px' }}>
+                        <button className="botao-estilo-1 px-4" onClick={enviarComentario}>
+                            Enviar
+                        </button>
+                    </div>
+                </Box>
+            </Modal>
+
+            {/* Modal de Avaliação */}
+            <Modal open={showAvaliacaoModal} onClose={() => setShowAvaliacaoModal(false)}>
+                <Box
+                    sx={{
+                        ...modalStyle,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
+                >
+                    <div style={{ display: 'flex', justifyContent: 'center', justifyItems: 'center', marginBottom: '10px' }}>
+                        {[1, 2, 3, 4, 5].map((nivel) => (
+                            <PiSirenDuotone
+                                key={nivel}
+                                size={40}
+                                color={nivel <= avaliacao ? 'red' : 'gray'}
+                                onClick={() => setAvaliacao(nivel)}
+                                style={{ cursor: 'pointer', margin: '0 8px' }}
+                            />
+                        ))}
+                    </div>
+                    <div style={{ alignSelf: 'flex', justifyContent: 'center', justifyItems: 'center' }}>
+                        <button className="botao-estilo-1 px-4" onClick={enviarAvaliacao}>
+                            Enviar
+                        </button>
+                    </div>
+                </Box>
+            </Modal>
         </div>
-    );
+    )
 }
 
-export default Detalhes;
+export default Detalhes
