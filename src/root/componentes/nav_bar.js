@@ -16,7 +16,7 @@ function NavBar() {
                 <FcPanorama size={30}/>
                 <h1>Mapa Interativo</h1>
             </div>
-            <div className='flex flex-col items-center justify-center'>
+            <div onClick={() => {navigate('/perfil')}} className='flex flex-col items-center justify-center'>
                 <IoPersonCircle size={30}/>
                 <h1>Perfil</h1>
             </div>

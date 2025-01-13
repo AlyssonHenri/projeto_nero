@@ -8,6 +8,8 @@ import Homepage from './root/paginas/homepage'
 import Postagem from './root/paginas/postagem_detalhes'
 import NovaPostagem from './root/paginas/nova_postagem'
 import Mapa from './root/paginas/mapa'
+import Perfil from './root/paginas/perfil'
+import Corra from './root/paginas/corra'
 import IsolarRota from './root/util/isolar_rota'
 
 function App() {
@@ -46,6 +48,22 @@ function App() {
           element={
             <IsolarRota>
               <Mapa />
+            </IsolarRota>
+          }
+        />
+        <Route 
+          path="/perfil" 
+          element={
+            <IsolarRota>
+              <Perfil />
+            </IsolarRota>
+          }
+        />
+        <Route 
+          path="/saia/fuja/imediatamente" 
+          element={
+            <IsolarRota>
+              <Corra />
             </IsolarRota>
           }
         />
