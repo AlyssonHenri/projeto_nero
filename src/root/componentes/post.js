@@ -66,7 +66,7 @@ function Post({ id, nome, status, imagem, perfil, criacao, votos, descricao, nat
         )
     }
 
-    const fotoPerfil = perfilData?.foto_perfil ? `https://api.nero.lat/${perfilData.foto_perfil}` : 'https://via.placeholder.com/150'
+    const fotoPerfil = perfilData?.foto_perfil ? `https://api.nero.lat/${perfilData.foto_perfil}` : '/images/sem-foto.png'
     const nomePerfil = perfilData?.first_name || 'Anônimo'
     
     return (
@@ -93,7 +93,7 @@ function Post({ id, nome, status, imagem, perfil, criacao, votos, descricao, nat
             <div className={`w-full h-full`}>
                 <img 
                     alt={`Imagem de ${nome}`} 
-                    src={`https://api.nero.lat/${imagem}` || 'https://via.placeholder.com/150'} 
+                    src={imagem ? `https://api.nero.lat/${imagem}` : '/images/sem-imagem.png'}
                     className='w-full h-full object-cover' 
                 />
             </div>

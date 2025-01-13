@@ -100,7 +100,7 @@ function Detalhes() {
                         </div>
                         <img
                             alt={`Imagem de ${nome}`}
-                            src={`https://api.nero.lat/${imagem}`}
+                            src={`https://api.nero.lat/${imagem}` || '/images/sem-foto.png'}
                             className='w-full h-full rounded-t-lg'
                         />
                     </div>
