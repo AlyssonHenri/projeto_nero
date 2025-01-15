@@ -121,40 +121,5 @@
 .leaflet-container {
   height: 100%;
   width: 100vw;
-}
-
-.leaflet-tooltip {
-  background-color: transparent !important;
-  border: 0px !important;
-  box-shadow: none !important;
-}
-
-.myCSSClass {
-  background: transparent;
-  border: 2px solid transparent;
-}
-
-.leaflet-tooltip.myCSSClass {
-  background-color: transparent !important;
-  border: 2px solid transparent !important;
-}
-
-.leaflet-tooltip-left.myCSSClass::before {
-  border-left-color: transparent !important;
-}
-
-.leaflet-tooltip-right.myCSSClass::before {
-  border-right-color: transparent !important;
-}
-
-.leaflet-tooltip-top.myCSSClass::before {
-  border-top-color: transparent !important;
-}
-
-.leaflet-tooltip-bottom.myCSSClass::before {
-  border-bottom-color: transparent !important;
-}
-
-.leaflet-container {
   z-index: 1;
 }

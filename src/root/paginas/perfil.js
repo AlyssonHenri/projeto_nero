@@ -3,6 +3,7 @@ import { isBrowser } from 'react-device-detect'
 import NavBar from '../componentes/nav_bar'
 import { useNavigate } from 'react-router-dom'
 import { RiArrowLeftSLine } from 'react-icons/ri'
+import Divider from '@mui/material/Divider'
 
 function Perfil() {
     const token = localStorage.getItem('token')
@@ -23,7 +24,6 @@ function Perfil() {
     })
     const [postagens, setPostagens] = useState([])
 
-    // função para buscar dados do usuário
     useEffect(() => {
         const fetchUserData = async () => {
             try {
@@ -59,7 +59,6 @@ function Perfil() {
         fetchUserData()
     }, [id, token])
 
-    // função para buscar postagens do usuário
     useEffect(() => {
         const fetchPostagens = async () => {
             try {
@@ -214,21 +213,24 @@ function Perfil() {
                     </button>
                 </div>
                 <h1 className='font-semibold text-xl mb-3 mt-2'>Minhas Postagens</h1>
-                {postagens.map((postagem) => (
-                    <div key={postagem.id} className='flex flex-row justify-between h-20'>
-                        <div className='flex start-0'>
-                            <div className={`mt-2 mr-2 rounded-full h-6 w-6 ${postagem.status === 'pendente' ? 'bg-red-500' : 'bg-green-500'}`}>
-                                <h1 className='ml-[1px]'>{postagem.status === 'pendente' ? '🔴' : '🟢'}</h1>
+                {postagens.map((postagem, index) => (
+                    <React.Fragment key={postagem.id}>
+                        <div className='flex flex-row justify-between h-11'>
+                            <div className='flex start-0'>
+                                <div className={`mt-2 mr-2 rounded-full h-6 w-6 bg-gray-500}`}>
+                                    <h1 className='ml-[1px]'>{postagem.status === 'pendente' ? '🔴' : '🟢'}</h1>
+                                </div>
+                                <div className='flex flex-col'>
+                                    <h1 className='text-sm font-semibold'>{postagem.titulo}</h1>
+                                    <h1 className='text-xs text-gray-500'>Enviado em {new Date(postagem.criacao).toLocaleDateString()}</h1>
+                                </div>
                             </div>
-                            <div className='flex flex-col'>
-                                <h1 className='text-sm font-semibold'>{postagem.titulo}</h1>
-                                <h1 className='text-xs text-gray-500'>Enviado em {new Date(postagem.criacao).toLocaleDateString()}</h1>
+                            <div>
+                                <h1 className='font-semibold mr-2 mt-2'>Status: {`${postagem.status === 1 ? 'pendente' : 'resolvido'}`}</h1>
                             </div>
                         </div>
-                        <div>
-                            <h1 className='font-semibold mr-2'>Status: {postagem.status}</h1>
-                        </div>
-                    </div>
+                        {index < postagens.length - 0 && <Divider />}
+                    </React.Fragment>
                 ))}
             </div>
         </div>

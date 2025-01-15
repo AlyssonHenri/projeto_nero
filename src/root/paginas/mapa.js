@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react"
 import { isBrowser } from "react-device-detect"
 import NavBar from "../componentes/nav_bar"
 import { MapContainer, TileLayer, Marker, Tooltip } from "react-leaflet"
-import { PiArrowLeftBold } from "react-icons/pi"
 import { useNavigate } from "react-router-dom"
 import "leaflet/dist/leaflet.css"
 import L from "leaflet"
@@ -55,7 +54,7 @@ function Homepage() {
             setErroLocalizacao("Geolocalização não é suportada pelo seu navegador.")
             setCarregandoLocalizacao(false)
         }
-
+    
         const fetchPosts = async () => {
             try {
                 const response = await fetch('https://api.nero.lat/api/feed/', {
@@ -64,15 +63,16 @@ function Homepage() {
                         'Authorization': `Token ${token}`,
                     }
                 })
-
+    
                 if (response.ok) {
                     const data = await response.json()
                     console.log(data)
-
+    
                     const postagensFormatadas = data.map(post => {
+                        if (!post.geolocalizacao) return null;
                         const [lat, lng] = post.geolocalizacao.split(',')
                         const coordenadasValidas = !isNaN(lat) && !isNaN(lng)
-
+    
                         if (coordenadasValidas) {
                             return {
                                 ...post,
@@ -82,10 +82,10 @@ function Homepage() {
                                 tipo: tipoTexto[post.natureza] || 'Outro'
                             }
                         }
-
+    
                         return null
                     }).filter(post => post !== null)
-
+    
                     setPostagens(postagensFormatadas)
                     console.log('Postagens carregadas:', postagensFormatadas)
                 } else {
@@ -95,9 +95,9 @@ function Homepage() {
                 console.error('Erro de conexão ao carregar postagens:', error)
             }
         }
-
+    
         fetchPosts()
-
+    
     }, [])
 
     if (isBrowser) {
@@ -167,9 +167,12 @@ function Homepage() {
                                     <Tooltip
                                         direction="bottom"
                                         offset={[0, 0]}
-                                        className="myCSSClass"
                                     >
-                                        {loc.titulo}
+                                        <div>
+                                            {loc.titulo}
+                                            <br />
+                                            {loc.imagem && <img src={`https://api.nero.lat/${loc.imagem}`} alt="Imagem" style={{ width: '50px', height: '50px' }} />}
+                                        </div>
                                     </Tooltip>
                                 </Marker>
                             ))}
