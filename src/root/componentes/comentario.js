@@ -25,12 +25,9 @@ function Comentario({ texto, usuario }) {
         fetchPerfilData()
     }, [])
 
-    const fotoPerfil = perfilData?.foto_perfil ? `https://api.nero.lat/${perfilData.foto_perfil}` : 'https://via.placeholder.com/150'
+    const fotoPerfil = perfilData?.foto_perfil ? `https://api.nero.lat/${perfilData.foto_perfil}` : '/images/sem-foto.png'
     const nomePerfil = perfilData?.first_name || 'Anônimo'
-
-    console.log(nomePerfil)
-    console.log(fotoPerfil)
-
+    
     return (
         <div className='flex flex-col bg-white h-36 min-w-60 rounded-lg p-4 shadow-md'>
             <div className='flex items-center gap-2'>
