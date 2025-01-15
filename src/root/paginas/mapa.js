@@ -168,10 +168,10 @@ function Homepage() {
                                         direction="bottom"
                                         offset={[0, 0]}
                                     >
-                                        <div>
+                                        <div style={{ textAlign: 'center' }}>
                                             {loc.titulo}
                                             <br />
-                                            {loc.imagem && <img src={`https://api.nero.lat/${loc.imagem}`} alt="Imagem" style={{ width: '50px', height: '50px' }} />}
+                                            {loc.imagem && <img src={`https://api.nero.lat/${loc.imagem}`} alt="Imagem" style={{ width: '100%', height: '100%' }} />}
                                         </div>
                                     </Tooltip>
                                 </Marker>
