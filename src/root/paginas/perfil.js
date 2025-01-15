@@ -91,6 +91,41 @@ function Perfil() {
         }))
     }
 
+    const handleEditProfile = async () => {
+        try {
+            const formDataToSubmit = new FormData();
+            formDataToSubmit.append('first_name', formData.first_name);
+            formDataToSubmit.append('email', formData.email);
+            formDataToSubmit.append('cpf', formData.cpf);
+            formDataToSubmit.append('data_nascimento', formData.data_nascimento);
+            formDataToSubmit.append('sexo', formData.sexo);
+            formDataToSubmit.append('grau_ensino', formData.grau_ensino);
+    
+            const response = await fetch(`https://api.nero.lat/api/usuario/${id}/`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Token ${token}`,
+                    'X-CSRFTOKEN': 'WIrpmUtsL0kWEV7eSQTg2gzLKPlqjFNOo3DgSKpMW9XuYLGTLUtIXx00m1JZTKrN',
+                },
+                body: formDataToSubmit,
+            });
+    
+            if (!response.ok) {
+                throw new Error('Erro ao editar o perfil. Verifique os dados e tente novamente.');
+            }
+    
+            const updatedData = await response.json();
+            setFormData((prev) => ({
+                ...prev,
+                ...updatedData,
+            }));
+            alert('Perfil atualizado com sucesso!');
+        } catch (error) {
+            setErro(error.message);
+            alert(`Erro ao atualizar perfil: ${error.message}`);
+        }
+    }
+
     const graudeEnsino = [
         { id: '7', text: 'Ensino Médio' },
         { id: '5', text: 'Ensino Fundamental' },
@@ -208,7 +243,7 @@ function Perfil() {
                     </div>
                 </div>
                 <div className="flex flex-col justify-around gap-2 mt-4 w-full">
-                    <button className="botao-estilo-2">
+                    <button className="botao-estilo-2" onClick={handleEditProfile}>
                         Editar Perfil
                     </button>
                 </div>
