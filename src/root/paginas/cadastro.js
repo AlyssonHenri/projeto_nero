@@ -87,6 +87,8 @@ function Cadastro() {
       if (response.ok) {
         const data = await response.json()
         localStorage.setItem('token', data.token)
+        localStorage.setItem('id', data.id)
+        localStorage.setItem('tipo', data.tipo)
         navigate('/home')
       } else {
         setErro('Erro no login após cadastro.')

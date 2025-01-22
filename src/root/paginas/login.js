@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { isBrowser } from 'react-device-detect'
+import CircularProgress from '@mui/material/CircularProgress'
 
 function Login() {
   const navigate = useNavigate()
@@ -8,12 +9,14 @@ function Login() {
   const [senha, setSenha] = useState('')
   const [erroLogin, setErroLogin] = useState(false)
   const [shake, setShake] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     localStorage.clear()
   },[])
 
   const handleLogin = async () => {
+    setLoading(true)
     try {
       const response = await fetch('https://api.nero.lat/api/api-token-auth/', {
         method: 'POST',
@@ -30,6 +33,7 @@ function Login() {
         const data = await response.json()
         localStorage.setItem('token', data.token)
         localStorage.setItem('id', data.id)
+        localStorage.setItem('tipo', data.tipo)
         navigate('/home')
       } else {
         setErroLogin(true)
@@ -41,6 +45,8 @@ function Login() {
       setErroLogin(true)
       setShake(true)
       setTimeout(() => setShake(false), 500)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -76,12 +82,16 @@ function Login() {
         <div className='flex justify-around gap-2 mt-1 w-[90%]'>
           <button
             onClick={() => navigate('/cadastro')}
-           className='botao-estilo-1'>Cadastrar</button>
+            className='botao-estilo-1'
+          >
+            Cadastrar
+          </button>
           <button
             onClick={handleLogin}
             className={`botao-estilo-2 ${shake ? 'shake' : ''}`}
+            disabled={loading}
           >
-            Log In
+            {loading ? <CircularProgress sx={{mb: -0.5}} size={20} color="inherit"/> : 'Log In'}
           </button>
         </div>
         <h1 className='mt-3 text-sm text-gray-400 cursor-pointer'>Esqueceu sua senha?</h1>

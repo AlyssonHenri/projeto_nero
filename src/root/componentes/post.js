@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { PiSirenDuotone } from 'react-icons/pi'
 import { useNavigate } from 'react-router-dom'
 
-function Post({ id, nome, status, imagem, perfil, criacao, votos, descricao, natureza }) {
+function Post({ id, usuario, nome, status, imagem, perfil, criacao, votos, descricao, natureza }) {
     const token = localStorage.getItem('token')
     const navigate = useNavigate()
     const [perfilData, setPerfilData] = useState(null)
@@ -108,7 +108,7 @@ function Post({ id, nome, status, imagem, perfil, criacao, votos, descricao, nat
                 <button
                     onClick={() => {
                         navigate(`/post/${id}`, {
-                            state: { id, nome, status, imagem, fotoPerfil, nomePerfil, data, hora, votos, descricao, natureza }
+                            state: { id, nome, usuario, status, imagem, fotoPerfil, nomePerfil, data, hora, votos, descricao, natureza }
                         })
                     }}
                     className='botao-estilo-3 px-3 h-8 mr-2'

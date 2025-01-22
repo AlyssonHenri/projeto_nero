@@ -1,12 +1,10 @@
-// src/pages/Detalhes.js
-
 import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import NavBar from '../componentes/nav_bar'
 import Comentario from '../componentes/comentario'
 import { RiArrowLeftSLine } from 'react-icons/ri'
 import { PiSirenDuotone } from 'react-icons/pi'
-import { Modal, Box, Button, TextField, Typography } from '@mui/material'
+import { Modal, Box, TextField, } from '@mui/material'
 
 function Detalhes() {
     const navigate = useNavigate()
@@ -17,6 +15,8 @@ function Detalhes() {
     const [novoComentario, setNovoComentario] = useState("")
     const [avaliacao, setAvaliacao] = useState(0)
     const token = localStorage.getItem('token')
+    const id = localStorage.getItem('id')
+    const tipo = localStorage.getItem('tipo')
 
     const fetchComentarios = async () => {
         try {
@@ -43,8 +43,7 @@ function Detalhes() {
                 method: 'POST',
                 headers: {
                     accept: 'application/json',
-                    Authorization: `Token ${token}`,
-                    'X-CSRFTOKEN': 'fMzQz6BvCDA8wLYuARZc6BJucai9T3KF05sYkqZlh8yWcb4j55kFI9jiQTXT3bR8',
+                    Authorization: `Token ${token}`
                 },
                 body: formData,
             })
@@ -69,8 +68,7 @@ function Detalhes() {
                 method: 'POST',
                 headers: {
                     accept: 'application/json',
-                    Authorization: `Token ${token}`,
-                    'X-CSRFTOKEN': 'fMzQz6BvCDA8wLYuARZc6BJucai9T3KF05sYkqZlh8yWcb4j55kFI9jiQTXT3bR8',
+                    Authorization: `Token ${token}`
                 },
                 body: formData,
             })
@@ -98,6 +96,7 @@ function Detalhes() {
     const {
         nome,
         status,
+        usuario,
         imagem,
         fotoPerfil,
         nomePerfil,
@@ -137,6 +136,9 @@ function Detalhes() {
         p: 4,
         borderRadius: 2,
     }
+
+    const isCurrentUser = () => parseInt(usuario) === parseInt(id)
+    const isTipoOuvidoria = () => tipo === "ouvidoria"
 
     return (
         <div className='relative flex flex-col h-screen w-screen bg-[#e9e8e8] overflow-auto'>
@@ -194,14 +196,30 @@ function Detalhes() {
                         </div>
                     ))}
                 </div>
-                <div className='flex gap-2 mt-4 mb-[100px]'>
-                    <button className='botao-estilo-1' onClick={() => setShowComentarioModal(true)}>
-                        Comentar
-                    </button>
-                    <button className='botao-estilo-2' onClick={() => setShowAvaliacaoModal(true)}>
-                        Avaliar
-                    </button>
-                </div>
+                { !isCurrentUser() && (
+                    !isTipoOuvidoria() ? (
+                        <div className='flex gap-2 mt-4 mb-[100px]'>
+                            <button className='botao-estilo-1' onClick={() => setShowComentarioModal(true)}>
+                                Comentar
+                            </button>
+                            <button className='botao-estilo-2' onClick={() => setShowAvaliacaoModal(true)}>
+                                Avaliar
+                            </button>
+                        </div>
+                    ) : (
+                        <div className='flex gap-2 mt-4 mb-[100px]'>
+                            <button className='botao-estilo-1' >
+                                Comentar
+                            </button>
+                            <button className='botao-estilo-1' >
+                                Reportar
+                            </button>
+                            <button className='botao-estilo-2' >
+                                Resolver
+                            </button>
+                        </div>
+                    )
+                )}
             </div>
             {/* Modal de Comentários */}
             <Modal open={showComentarioModal} onClose={() => setShowComentarioModal(false)}>

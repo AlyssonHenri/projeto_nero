@@ -43,6 +43,7 @@ function SkeletonPost() {
 
 function Homepage() {
     const token = localStorage.getItem('token')
+    const tipo = localStorage.getItem('tipo')
     const navigate = useNavigate()
     const [miniaturas, setMiniaturas] = useState([])
     const [posts, setPosts] = useState([])
@@ -118,23 +119,27 @@ function Homepage() {
                 <NavBar />
             </div>
             <div className='flex flex-col p-3'>
-                <h1 className='font-semibold text-xl mb-3'>Minhas Postagens</h1>
-                <div className='flex w-full overflow-x-auto gap-4 pb-3'>
-                    {loadingMiniaturas
-                        ? Array.from({ length: 2 }).map((_, index) => (
-                              <SkeletonMiniatura key={index} />
-                          ))
-                        : miniaturas.map((miniatura, index) => (
-                              <Miniatura
-                                  key={index}
-                                  tipo={miniatura.natureza}
-                                  nome={miniatura.titulo}
-                                  status={miniatura.status}
-                                  imagem={miniatura.imagem}
-                              />
-                          ))}
-                </div>
-                <button className='botao-estilo-2 mt-2' onClick={() => navigate('/post/novo')}>Criar Postagem</button>
+            { tipo === "cidadão" &&
+                <>
+                    <h1 className='font-semibold text-xl mb-3'>Minhas Postagens</h1>
+                    <div className='flex w-full overflow-x-auto gap-4 pb-3'>
+                        {loadingMiniaturas
+                            ? Array.from({ length: 2 }).map((_, index) => (
+                                <SkeletonMiniatura key={index} />
+                            ))
+                            : miniaturas.map((miniatura, index) => (
+                                <Miniatura
+                                    key={index}
+                                    tipo={miniatura.natureza}
+                                    nome={miniatura.titulo}
+                                    status={miniatura.status}
+                                    imagem={miniatura.imagem}
+                                />
+                            ))}
+                    </div>
+                    <button className='botao-estilo-2 mt-2' onClick={() => navigate('/post/novo')}>Criar Postagem</button>
+                </>
+            }
                 <h1 className='font-semibold text-xl mb-3 mt-5'>Feed de Postagens</h1>
                 <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 pb-3 mb-16'>
                     {loadingPosts
@@ -145,6 +150,7 @@ function Homepage() {
                               <Post
                                   key={post.id}
                                   id={post.id}
+                                  usuario={post.usuario}
                                   nome={post.titulo}
                                   status={post.status}
                                   imagem={post.imagem}
