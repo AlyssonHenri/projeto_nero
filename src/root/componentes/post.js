@@ -79,7 +79,7 @@ function Post({ id, usuario, nome, status, imagem, perfil, criacao, votos, descr
                         alt={`Perfil de ${nomePerfil}`} 
                     />
                     <div>
-                        <h1 className='font-semibold text-xl -mb-1'>{nomePerfil}</h1>
+                        <h1 className='font-semibold text-xl -mb-1 truncate'>{nomePerfil}</h1>
                         <h1 className='font-[400] text-sm text-gray-400'>
                             Criado em: {data} às {hora}
                         </h1>

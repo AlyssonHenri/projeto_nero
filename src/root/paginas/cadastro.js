@@ -27,12 +27,16 @@ function Cadastro() {
   const handleSubmit = async () => {
     if (!formData.username || !formData.password || !formData.first_name || !formData.email) {
       setErro('Preencha os campos obrigatórios.')
-      console.log(formData)
       return
     }
 
     if (formData.password.length < 8) {
       setErro('A senha deve ter pelo menos 8 caracteres.')
+      return
+    }
+
+    if (formData.cpf.length < 11) {
+      setErro('O cpf deve ter pelo menos 8 caracteres.')
       return
     }
 

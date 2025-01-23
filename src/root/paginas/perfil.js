@@ -83,8 +83,17 @@ function Perfil() {
         fetchPostagens()
     }, [token])
 
+    const validarCpf = (cpf) => {
+        return cpf.length >= 11
+    }
+    
     const handleChange = (e) => {
         const { name, value } = e.target
+        if (name === 'cpf' && !validarCpf(value)) {
+            setErro('CPF deve ter no mínimo 11 caracteres')
+        } else {
+            setErro('')
+        }
         setFormData((prevState) => ({
             ...prevState,
             [name]: value,
@@ -93,13 +102,13 @@ function Perfil() {
 
     const handleEditProfile = async () => {
         try {
-            const formDataToSubmit = new FormData();
-            formDataToSubmit.append('first_name', formData.first_name);
-            formDataToSubmit.append('email', formData.email);
-            formDataToSubmit.append('cpf', formData.cpf);
-            formDataToSubmit.append('data_nascimento', formData.data_nascimento);
-            formDataToSubmit.append('sexo', formData.sexo);
-            formDataToSubmit.append('grau_ensino', formData.grau_ensino);
+            const formDataToSubmit = new FormData()
+            formDataToSubmit.append('first_name', formData.first_name)
+            formDataToSubmit.append('email', formData.email)
+            formDataToSubmit.append('cpf', formData.cpf)
+            formDataToSubmit.append('data_nascimento', formData.data_nascimento)
+            formDataToSubmit.append('sexo', formData.sexo)
+            formDataToSubmit.append('grau_ensino', formData.grau_ensino)
     
             const response = await fetch(`https://api.nero.lat/api/usuario/${id}/`, {
                 method: 'PATCH',
@@ -108,21 +117,21 @@ function Perfil() {
                     'X-CSRFTOKEN': 'WIrpmUtsL0kWEV7eSQTg2gzLKPlqjFNOo3DgSKpMW9XuYLGTLUtIXx00m1JZTKrN',
                 },
                 body: formDataToSubmit,
-            });
+            })
     
             if (!response.ok) {
-                throw new Error('Erro ao editar o perfil. Verifique os dados e tente novamente.');
+                throw new Error('Erro ao editar o perfil. Verifique os dados e tente novamente.')
             }
     
-            const updatedData = await response.json();
+            const updatedData = await response.json()
             setFormData((prev) => ({
                 ...prev,
                 ...updatedData,
-            }));
-            alert('Perfil atualizado com sucesso!');
+            }))
+            alert('Perfil atualizado com sucesso!')
         } catch (error) {
-            setErro(error.message);
-            alert(`Erro ao atualizar perfil: ${error.message}`);
+            setErro(error.message)
+            alert(`Erro ao atualizar perfil: ${error.message}`)
         }
     }
 
@@ -203,6 +212,7 @@ function Perfil() {
                             value={formData.cpf}
                             onChange={handleChange}
                         />
+                        {erro && <p className="text-red-500">{erro}</p>}
                     </div>
 
                     <div>

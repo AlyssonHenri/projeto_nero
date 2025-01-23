@@ -15,7 +15,6 @@ function Comentario({ texto, usuario }) {
             })
             const data = await response.json()
             setPerfilData(data)
-            console.log(data)
         } catch (error) {
             console.error('Erro ao buscar os dados do perfil:', error)
         }
@@ -36,7 +35,7 @@ function Comentario({ texto, usuario }) {
                     src={fotoPerfil} 
                     alt={`Perfil de ${nomePerfil}`} 
                 />
-                <h1 className='font-semibold'>{nomePerfil || 'Anônimo'}</h1>
+                <h1 className='font-semibold truncate'>{nomePerfil || 'Anônimo'}</h1>
             </div>
             <p 
                 className='text-gray-600 line-clamp-3 overflow-hidden mt-2' 
