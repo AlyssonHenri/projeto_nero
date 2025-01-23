@@ -1,26 +1,27 @@
-import React, { useEffect, useState } from "react";
-import { isBrowser } from "react-device-detect";
-import NavBar from "../componentes/nav_bar";
-import { MapContainer, TileLayer, Marker, Tooltip } from "react-leaflet";
-import { useNavigate } from "react-router-dom";
-import "leaflet/dist/leaflet.css";
-import L from "leaflet";
-import { RiArrowLeftSLine } from "react-icons/ri";
-import dayjs from "dayjs"; // Adicionar biblioteca para manipulação de datas.
+import React, { useEffect, useState } from "react"
+import { isBrowser } from "react-device-detect"
+import NavBar from "../componentes/nav_bar"
+import { MapContainer, TileLayer, Marker, Tooltip, Polygon } from "react-leaflet"
+import { useNavigate } from "react-router-dom"
+import "leaflet/dist/leaflet.css"
+import L from "leaflet"
+import { RiArrowLeftSLine } from "react-icons/ri"
+import dayjs from "dayjs"
 
 function Homepage() {
-    const token = localStorage.getItem("token");
-    const navigate = useNavigate();
-    const [posicaoAtual, setPosicaoAtual] = useState(null);
-    const [carregandoLocalizacao, setCarregandoLocalizacao] = useState(true);
-    const [erroLocalizacao, setErroLocalizacao] = useState(null);
-    const [postagens, setPostagens] = useState([]);
-    const [modalAberto, setModalAberto] = useState(null);
+    const token = localStorage.getItem("token")
+    const navigate = useNavigate()
+    const [posicaoAtual, setPosicaoAtual] = useState(null)
+    const [carregandoLocalizacao, setCarregandoLocalizacao] = useState(true)
+    const [erroLocalizacao, setErroLocalizacao] = useState(null)
+    const [postagens, setPostagens] = useState([])
+    const [modalAberto, setModalAberto] = useState(null)
+    const [dadosCidades, setDadosCidades] = useState([])
     const [filtros, setFiltros] = useState({
         tempo: null,
         categoria: null,
         avaliacoes: null,
-    });
+    })
 
     const tipoCor = {
         1: "#3B82F6",
@@ -29,7 +30,7 @@ function Homepage() {
         4: "#9E7D44",
         5: "#6B7280",
         6: "#E5E7EB",
-    };
+    }
 
     const tipoTexto = {
         1: "Infraestrutura",
@@ -38,13 +39,13 @@ function Homepage() {
         4: "Saneamento",
         5: "Trânsito",
         6: "Outros",
-    };
+    }
 
     const intervaloDatas = {
         Hoje: () => dayjs().startOf("day").toISOString(),
         "Esta Semana": () => dayjs().startOf("week").toISOString(),
         "Este Mês": () => dayjs().startOf("month").toISOString(),
-    };
+    }
 
     useEffect(() => {
         if (navigator.geolocation) {
@@ -53,18 +54,18 @@ function Homepage() {
                     setPosicaoAtual({
                         lat: position.coords.latitude,
                         lng: position.coords.longitude,
-                    });
-                    setCarregandoLocalizacao(false);
+                    })
+                    setCarregandoLocalizacao(false)
                 },
                 (err) => {
-                    setErroLocalizacao("Não foi possível acessar sua localização.");
-                    console.error("Erro ao obter localização:", err);
-                    setCarregandoLocalizacao(false);
+                    setErroLocalizacao("Não foi possível acessar sua localização.")
+                    console.error("Erro ao obter localização:", err)
+                    setCarregandoLocalizacao(false)
                 }
-            );
+            )
         } else {
-            setErroLocalizacao("Geolocalização não é suportada pelo seu navegador.");
-            setCarregandoLocalizacao(false);
+            setErroLocalizacao("Geolocalização não é suportada pelo seu navegador.")
+            setCarregandoLocalizacao(false)
         }
 
         const fetchPosts = async () => {
@@ -74,15 +75,15 @@ function Homepage() {
                         Accept: "application/json",
                         Authorization: `Token ${token}`,
                     },
-                });
+                })
 
                 if (response.ok) {
-                    const data = await response.json();
+                    const data = await response.json()
                     const postagensFormatadas = data
                         .map((post) => {
-                            if (!post.geolocalizacao) return null;
-                            const [lat, lng] = post.geolocalizacao.split(",");
-                            const coordenadasValidas = !isNaN(lat) && !isNaN(lng);
+                            if (!post.geolocalizacao) return null
+                            const [lat, lng] = post.geolocalizacao.split(",")
+                            const coordenadasValidas = !isNaN(lat) && !isNaN(lng)
 
                             if (coordenadasValidas) {
                                 return {
@@ -91,61 +92,79 @@ function Homepage() {
                                     lng: parseFloat(lng),
                                     cor: tipoCor[post.natureza] || "#E5E7EB",
                                     tipo: tipoTexto[post.natureza] || "Outro",
-                                };
+                                }
                             }
 
-                            return null;
+                            return null
                         })
-                        .filter((post) => post !== null);
+                        .filter((post) => post !== null)
 
-                    setPostagens(postagensFormatadas);
+                    setPostagens(postagensFormatadas)
                 } else {
-                    console.error(`Erro ao carregar postagens: ${response.status}`);
+                    console.error(`Erro ao carregar postagens: ${response.status}`)
                 }
             } catch (error) {
-                console.error("Erro de conexão ao carregar postagens:", error);
+                console.error("Erro de conexão ao carregar postagens:", error)
             }
-        };
+        }
 
-        fetchPosts();
-    }, []);
+        const fetchCidades = async () => {
+            try {
+                const response = await fetch("https://api.nero.lat/api/informacoes/cidades/", {
+                    headers: { Accept: "application/json" },
+                });
+                if (response.ok) {
+                    const data = await response.json()
+                    setDadosCidades(data)
+                } else {
+                    console.error("Erro ao carregar dados das cidades.")
+                }
+            } catch (error) {
+                console.error("Erro ao conectar-se à API:", error)
+            }
+        }
 
-    const coordenadasFallback = [-4.56447, -37.76533];
+        fetchCidades()
+
+        fetchPosts()
+    }, [])
+
+    const coordenadasFallback = [-4.56447, -37.76533]
     const centro = posicaoAtual
         ? [posicaoAtual.lat, posicaoAtual.lng]
-        : coordenadasFallback;
+        : coordenadasFallback
 
     const iconePersonalizado = (cor) => {
         const svgIcon = `
             <svg fill="${cor}" width="30" height="30" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
                 <path d="M127.99414,15.9971a88.1046,88.1046,0,0,0-88,88c0,75.29688,80,132.17188,83.40625,134.55469a8.023,8.023,0,0,0,9.1875,0c3.40625-2.38281,83.40625-59.25781,83.40625-134.55469A88.10459,88.10459,0,0,0,127.99414,15.9971ZM128,72a32,32,0,1,1-32,32A31.99909,31.99909,0,0,1,128,72Z"/>
             </svg>
-        `;
+        `
         return new L.Icon({
             iconUrl: `data:image/svg+xml;base64,${btoa(svgIcon)}`,
             iconSize: [30, 30],
-        });
-    };
+        })
+    }
 
-    const abrirModal = (tipo) => setModalAberto(tipo);
-    const fecharModal = () => setModalAberto(null);
+    const abrirModal = (tipo) => setModalAberto(tipo)
+    const fecharModal = () => setModalAberto(null)
 
     const aplicarOuRemoverFiltro = (tipo, valor) => {
         setFiltros((prev) => ({
             ...prev,
             [tipo]: prev[tipo] === valor ? null : valor,
-        }));
-        fecharModal();
-    };
+        }))
+        fecharModal()
+    }
 
     const renderModal = () => {
-        if (!modalAberto) return null;
+        if (!modalAberto) return null
 
-        let opcoes = [];
+        let opcoes = []
         if (modalAberto === "Tempo") {
-            opcoes = ["Hoje", "Esta Semana", "Este Mês"];
+            opcoes = ["Hoje", "Esta Semana", "Este Mês"]
         } else if (modalAberto === "Categoria") {
-            opcoes = Object.values(tipoTexto);
+            opcoes = Object.values(tipoTexto)
         }
 
         return (
@@ -170,15 +189,15 @@ function Homepage() {
                     </button>
                 </div>
             </div>
-        );
-    };
+        )
+    }
 
     const postagensFiltradas = postagens.filter((post) => {
-        const filtroDataAtivo = filtros.tempo && intervaloDatas[filtros.tempo]();
-        if (filtroDataAtivo && dayjs(post.criacao).isBefore(filtroDataAtivo)) return false;
-        if (filtros.categoria && post.tipo !== filtros.categoria) return false;
-        return true;
-    });
+        const filtroDataAtivo = filtros.tempo && intervaloDatas[filtros.tempo]()
+        if (filtroDataAtivo && dayjs(post.criacao).isBefore(filtroDataAtivo)) return false
+        if (filtros.categoria && post.tipo !== filtros.categoria) return false
+        return true
+    })
 
     if (isBrowser) {
         return (
@@ -187,7 +206,7 @@ function Homepage() {
                     Acesso indisponível, tente novamente em um dispositivo móvel.
                 </p>
             </div>
-        );
+        )
     }
 
     return (
@@ -242,6 +261,28 @@ function Homepage() {
                                     </Tooltip>
                                 </Marker>
                             ))}
+                            {dadosCidades.map((cidade) => (
+                                <React.Fragment key={cidade.id}>
+                                    <Polygon
+                                        positions={cidade.pontos}
+                                        color="blue"
+                                        fillOpacity={0.4}
+                                        pathOptions={{ color: "#0000FF", weight: 2 }}
+                                    />
+        
+                                    {cidade.bairros.map((bairro) => (
+                                        <Polygon
+                                            key={bairro.id}
+                                            positions={bairro.pontos}
+                                            color="green"
+                                            fillOpacity={0.3}
+                                            pathOptions={{ color: "#00FF00", weight: 2 }}
+                                        >
+                                            <Tooltip>{bairro.nome}</Tooltip>
+                                        </Polygon>
+                                    ))}
+                                </React.Fragment>
+                            ))}
                         </MapContainer>
                     </div>
                 )}
@@ -271,7 +312,7 @@ function Homepage() {
 
             {renderModal()}
         </div>
-    );
+    )
 }
 
-export default Homepage;
+export default Homepage

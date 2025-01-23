@@ -36,7 +36,7 @@ function Post({ id, usuario, nome, status, imagem, perfil, criacao, votos, descr
     const data = dataCriacao.toLocaleDateString()
     const hora = dataCriacao.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 
-    const renderStars = (votos) => {
+    const renderAlertas = (votos) => {
         const max = 5
         const cheias = Math.min(parseInt(votos, 10), max)
         const vazias = max - cheias
@@ -77,7 +77,7 @@ function Post({ id, usuario, nome, status, imagem, perfil, criacao, votos, descr
                     </div>
                 </div>
                 <div className='flex flex-col justify-center items-center'>
-                    <div className='flex'>{renderStars(votos)}</div>
+                    <div className='flex'>{renderAlertas(votos)}</div>
                 </div>
             </div>
             <div className={`w-full h-full`}>
