@@ -77,7 +77,7 @@ function Login() {
             value={senha}
             onChange={(e) => setSenha(e.target.value)}
           />
-          {erroLogin && <p className='text-red-500 text-sm'>Email ou senha incorretos.</p>}
+          {erroLogin && <p className='text-red-500 text-sm'>Login ou Senha incorretos.</p>}
         </div>
         <div className='flex justify-around gap-2 mt-1 w-[90%]'>
           <button

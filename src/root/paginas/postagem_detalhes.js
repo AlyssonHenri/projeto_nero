@@ -137,6 +137,27 @@ function Detalhes() {
         borderRadius: 2,
     }
 
+    const renderAlertas = (votos) => {
+        const max = 5
+        const cheias = Math.min(parseInt(votos, 10), max)
+        const vazias = max - cheias
+
+        return (
+            <>
+                {Array(cheias)
+                    .fill()
+                    .map((_, index) => (
+                        <PiSirenDuotone key={`cheias-${index}`} color='red' />
+                    ))}
+                {Array(vazias)
+                    .fill()
+                    .map((_, index) => (
+                        <PiSirenDuotone key={`vazia-${index}`} color='gray' />
+                    ))}
+            </>
+        )
+    }
+
     const isCurrentUser = () => parseInt(usuario) === parseInt(id)
     const isTipoOuvidoria = () => tipo === "ouvidoria"
 
@@ -180,7 +201,7 @@ function Detalhes() {
                     <div className='flex justify-between items-center rounded-b-lg bg-white p-1'>
                         <div className='px-3 flex flex-col font-semibold'>
                             <p className='leading-4 my-2'>{descricao}</p>
-                            <h1 className='flex'>Votos: <p className='font-normal ml-1'>{votos} votos</p></h1>
+                            <h1 className='flex'>Votos: <p className='font-normal ml-1 mt-[5px] flex'>{renderAlertas(votos)}</p></h1>
                             <h1 className='flex'>Natureza: <p className='font-normal ml-1 mb-3'>{naturezaConvertida}.</p></h1>
                         </div>
                     </div>

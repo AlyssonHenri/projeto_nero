@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { RiArrowLeftSLine } from 'react-icons/ri'
 import { useNavigate } from 'react-router-dom'
+import InputMask from 'react-input-mask'
 
 function Cadastro() {
     const navigate = useNavigate()
@@ -24,6 +25,28 @@ function Cadastro() {
       }))
     }
 
+    const validarCPF = (cpf) => {
+      cpf = cpf.replace(/\D/g, '')
+
+      if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false
+
+      let sum = 0
+      let remainder
+
+      for (let i = 1; i <= 9; i++) sum += parseInt(cpf[i - 1]) * (11 - i)
+      remainder = (sum * 10) % 11
+      if (remainder === 10 || remainder === 11) remainder = 0
+      if (remainder !== parseInt(cpf[9])) return false
+
+      sum = 0
+      for (let i = 1; i <= 10; i++) sum += parseInt(cpf[i - 1]) * (12 - i)
+      remainder = (sum * 10) % 11
+      if (remainder === 10 || remainder === 11) remainder = 0
+      if (remainder !== parseInt(cpf[10])) return false
+
+      return true
+  }
+
   const handleSubmit = async () => {
     if (!formData.username || !formData.password || !formData.first_name || !formData.email) {
       setErro('Preencha os campos obrigatórios.')
@@ -35,8 +58,8 @@ function Cadastro() {
       return
     }
 
-    if (formData.cpf.length < 11) {
-      setErro('O cpf deve ter pelo menos 8 caracteres.')
+    if (!validarCPF(formData.cpf)) {
+      setErro('O CPF informado é inválido.')
       return
     }
 
@@ -177,17 +200,17 @@ function Cadastro() {
         </div>
 
         <div>
-          <h1 className="font-semibold">CPF</h1>
-          <input
-            type="text"
-            name="cpf"
-            className="input-generico w-full"
-            placeholder="Digite seu CPF"
-            value={formData.cpf}
-            onChange={handleChange}
-          />
+            <h1 className="font-semibold">CPF</h1>
+            <InputMask
+                mask="999.999.999-99"
+                name="cpf"
+                className="input-generico w-full"
+                placeholder="Digite seu CPF"
+                value={formData.cpf}
+                onChange={handleChange}
+            />
         </div>
-
+        
         <div>
           <h1 className="font-semibold">Data de Nascimento</h1>
           <input

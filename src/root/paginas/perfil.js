@@ -4,6 +4,7 @@ import NavBar from '../componentes/nav_bar'
 import { useNavigate } from 'react-router-dom'
 import { RiArrowLeftSLine } from 'react-icons/ri'
 import Divider from '@mui/material/Divider'
+import InputMask from 'react-input-mask'
 
 function Perfil() {
     const token = localStorage.getItem('token')
@@ -83,14 +84,33 @@ function Perfil() {
         fetchPostagens()
     }, [token])
 
-    const validarCpf = (cpf) => {
-        return cpf.length >= 11
+    const validarCPF = (cpf) => {
+        cpf = cpf.replace(/\D/g, '')
+    
+        if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false
+    
+        let soma = 0
+        let resto
+    
+        for (let i = 1; i <= 9; i++) soma += parseInt(cpf[i - 1]) * (11 - i)
+        resto = (soma * 10) % 11
+        if (resto === 10 || resto === 11) resto = 0
+        if (resto !== parseInt(cpf[9])) return false
+    
+        soma = 0
+        
+        for (let i = 1; i <= 10; i++) soma += parseInt(cpf[i - 1]) * (12 - i)
+        resto = (soma * 10) % 11
+        if (resto === 10 || resto === 11) resto = 0
+        if (resto !== parseInt(cpf[10])) return false
+    
+        return true
     }
     
     const handleChange = (e) => {
         const { name, value } = e.target
-        if (name === 'cpf' && !validarCpf(value)) {
-            setErro('CPF deve ter no mínimo 11 caracteres')
+        if (name === 'cpf' && !validarCPF(value)) {
+            setErro('Insira um cpf válido')
         } else {
             setErro('')
         }
@@ -114,7 +134,6 @@ function Perfil() {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Token ${token}`,
-                    'X-CSRFTOKEN': 'WIrpmUtsL0kWEV7eSQTg2gzLKPlqjFNOo3DgSKpMW9XuYLGTLUtIXx00m1JZTKrN',
                 },
                 body: formDataToSubmit,
             })
@@ -204,8 +223,8 @@ function Perfil() {
 
                     <div>
                         <h1 className="font-semibold">CPF</h1>
-                        <input
-                            type="text"
+                        <InputMask
+                            mask="999.999.999-99"
                             name="cpf"
                             className="input-generico w-full"
                             placeholder="Digite seu CPF"
