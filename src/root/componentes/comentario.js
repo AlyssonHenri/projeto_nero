@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { IoPersonCircle } from 'react-icons/io5';
+import React, { useEffect, useState } from 'react'
+import { isBrowser } from 'react-device-detect'
 
 function Comentario({ texto, usuario }) {
     const token = localStorage.getItem('token')
@@ -28,27 +28,54 @@ function Comentario({ texto, usuario }) {
     const nomePerfil = perfilData?.first_name || 'Anônimo'
     
     return (
-        <div className='flex flex-col bg-white h-36 min-w-60 rounded-lg p-4 shadow-md'>
-            <div className='flex items-center gap-2'>
-                <img 
-                    className='h-8 w-8 rounded-full object-cover' 
-                    src={fotoPerfil} 
-                    alt={`Perfil de ${nomePerfil}`} 
-                />
-                <h1 className='font-semibold truncate'>{nomePerfil || 'Anônimo'}</h1>
-            </div>
-            <p 
-                className='text-gray-600 line-clamp-3 overflow-hidden mt-2' 
-                style={{
-                    display: '-webkit-box',
-                    WebkitBoxOrient: 'vertical',
-                    WebkitLineClamp: 3,
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                }}
-            >
-                {texto}
-            </p>
+        <div>
+            {isBrowser ? (
+                <div className='flex flex-col bg-white h-36 min-w-60 rounded-lg p-4 border-2 border-[#dbdbdb]'>
+                    <div className='flex items-center gap-2'>
+                        <img 
+                            className='h-8 w-8 rounded-full object-cover' 
+                            src={fotoPerfil} 
+                            alt={`Perfil de ${nomePerfil}`} 
+                        />
+                        <h1 className='font-semibold truncate'>{nomePerfil || 'Anônimo'}</h1>
+                    </div>
+                    <p 
+                        className='text-gray-600 line-clamp-3 overflow-hidden mt-2' 
+                        style={{
+                            display: '-webkit-box',
+                            WebkitBoxOrient: 'vertical',
+                            WebkitLineClamp: 3,
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                        }}
+                    >
+                        {texto}
+                    </p>
+                </div>
+            ) : (        
+                <div className='flex flex-col bg-white h-36 min-w-60 rounded-lg p-4 shadow-md'>
+                    <div className='flex items-center gap-2'>
+                        <img 
+                            className='h-8 w-8 rounded-full object-cover' 
+                            src={fotoPerfil} 
+                            alt={`Perfil de ${nomePerfil}`} 
+                        />
+                        <h1 className='font-semibold truncate'>{nomePerfil || 'Anônimo'}</h1>
+                    </div>
+                    <p 
+                        className='text-gray-600 line-clamp-3 overflow-hidden mt-2' 
+                        style={{
+                            display: '-webkit-box',
+                            WebkitBoxOrient: 'vertical',
+                            WebkitLineClamp: 3,
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                        }}
+                    >
+                        {texto}
+                    </p>
+                </div>
+            )}
         </div>
     );
 }

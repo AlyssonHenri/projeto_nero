@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { RiArrowLeftSLine } from 'react-icons/ri'
 import { useNavigate } from 'react-router-dom'
 import InputMask from 'react-input-mask'
+import { isBrowser } from 'react-device-detect'
 
 function Cadastro() {
     const navigate = useNavigate()
@@ -144,133 +145,139 @@ function Cadastro() {
   ]
 
   return (
-    <div className="flex flex-col h-screen w-[95%] ml-3">
+    <div className={`flex flex-col h-screen ${isBrowser? 'w-[100%] mt-10' : 'w-[95%] ml-3'} `}>
       <form>
-        <div className="fixed top-0 flex items-center -ml-3 bg-white w-screen min-h-12 text-xl font-semibold shadow-xl gap-2">
-          <RiArrowLeftSLine className='ml-2' onClick={() => navigate(-1)} size={30} />
+        <div className={`fixed top-0 flex items-center ${isBrowser? '' : '-ml-3'} bg-white w-screen min-h-12 text-xl font-semibold shadow-xl gap-2`}>
+          <RiArrowLeftSLine className='ml-5' onClick={() => navigate(-1)} size={30} />
           <h1 className="shadow-2xl -mt-[2px] ml-3">Cadastro</h1>
         </div>
 
-        <div className="mt-14">
-          <h1 className="font-semibold flex">Usuário<p className='text-gray-500'>*</p></h1>
-          <input
-            type="text"
-            name="username"
-            className="input-generico w-full"
-            placeholder="Escolha um usuário"
-            value={formData.username}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div>
-          <h1 className="font-semibold flex">Senha<p className='text-gray-500'>*</p></h1>
-          <input
-            type="password"
-            name="password"
-            className="input-generico w-full"
-            placeholder="Escolha uma senha"
-            value={formData.password}
-            onChange={handleChange}
-          />
-          <h1 className="-mt-2 text-xs text-gray-400">A senha deve ter pelo menos 8 caracteres</h1>
-        </div>
-
-        <div className="mt-2">
-          <h1 className="font-semibold flex">Nome Completo<p className='text-gray-500'>*</p></h1>
-          <input
-            type="text"
-            name="first_name"
-            className="input-generico w-full"
-            placeholder="Digite seu nome completo"
-            value={formData.first_name}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div>
-          <h1 className="font-semibold flex">Email<p className='text-gray-500'>*</p></h1>
-          <input
-            type="email"
-            name="email"
-            className="input-generico w-full"
-            placeholder="Digite seu endereço de email"
-            value={formData.email}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div>
-            <h1 className="font-semibold">CPF</h1>
-            <InputMask
-                mask="999.999.999-99"
-                name="cpf"
-                className="input-generico w-full"
-                placeholder="Digite seu CPF"
-                value={formData.cpf}
-                onChange={handleChange}
+        <div className={`${isBrowser? 'px-[10%]' : ''}`}>
+          <div className="mt-14">
+            <h1 className="font-semibold flex">Usuário<p className='text-gray-500'>*</p></h1>
+            <input
+              type="text"
+              name="username"
+              className="input-generico w-full"
+              placeholder="Escolha um usuário"
+              value={formData.username}
+              onChange={handleChange}
             />
-        </div>
-        
-        <div>
-          <h1 className="font-semibold">Data de Nascimento</h1>
-          <input
-            type="date"
-            name="data_nascimento"
-            className="input-generico w-full"
-            value={formData.data_nascimento}
-            onChange={handleChange}
-          />
-        </div>
+          </div>
 
+          <div>
+            <h1 className="font-semibold flex">Senha<p className='text-gray-500'>*</p></h1>
+            <input
+              type="password"
+              name="password"
+              className="input-generico w-full"
+              placeholder="Escolha uma senha"
+              value={formData.password}
+              onChange={handleChange}
+            />
+            <h1 className="-mt-2 text-xs text-gray-400">A senha deve ter pelo menos 8 caracteres</h1>
+          </div>
+
+          <div className="mt-2">
+            <h1 className="font-semibold flex">Nome Completo<p className='text-gray-500'>*</p></h1>
+            <input
+              type="text"
+              name="first_name"
+              className="input-generico w-full"
+              placeholder="Digite seu nome completo"
+              value={formData.first_name}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div>
+            <h1 className="font-semibold flex">Email<p className='text-gray-500'>*</p></h1>
+            <input
+              type="email"
+              name="email"
+              className="input-generico w-full"
+              placeholder="Digite seu endereço de email"
+              value={formData.email}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div>
+              <h1 className="font-semibold">CPF</h1>
+              <InputMask
+                  mask="999.999.999-99"
+                  name="cpf"
+                  className="input-generico w-full"
+                  placeholder="Digite seu CPF"
+                  value={formData.cpf}
+                  onChange={handleChange}
+              />
+          </div>
+          
+          <div>
+            <h1 className="font-semibold">Data de Nascimento</h1>
+            <input
+              type="date"
+              name="data_nascimento"
+              className="input-generico w-full"
+              value={formData.data_nascimento}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div>
+            <h1 className="font-semibold">Sexo</h1>
+            <div className="flex gap-2">
+              {['Masculino', 'Feminino', 'Prefiro não Informar'].map((sexo, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  className={`botao-estilo-5 ${
+                    formData.sexo === sexo[0].toLowerCase() ? 'bg-gray-300' : 'bg-[#F4F4F4]'
+                  }`}
+                  onClick={() => setFormData((prev) => ({ ...prev, sexo: sexo[0].toLowerCase() }))}
+                > 
+                  {sexo}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </form>
+      <div className={`${isBrowser? 'px-[10%]' : ''}`}>
         <div>
-          <h1 className="font-semibold">Sexo</h1>
-          <div className="flex gap-2">
-            {['Masculino', 'Feminino', 'Prefiro não Informar'].map((sexo, index) => (
-              <button
-                key={index}
-                type="button"
-                className={`botao-estilo-5 ${
-                  formData.sexo === sexo[0].toLowerCase() ? 'bg-gray-300' : 'bg-[#F4F4F4]'
+          <h1 className="font-semibold">Grau de Ensino</h1>
+          <div className="flex overflow-auto gap-2">
+            {graudeEnsino.map((item) => (
+              <button 
+                key={item.id}
+                className={`botao-estilo-5 mb-2 ${
+                  formData.grau_ensino === item.id ? 'bg-gray-300' : 'bg-[#F4F4F4]'
                 }`}
-                onClick={() => setFormData((prev) => ({ ...prev, sexo: sexo[0].toLowerCase() }))}
-              > 
-                {sexo}
+                onClick={() => setFormData((prev) => ({ ...prev, grau_ensino: item.id }))}
+              >
+                {item.text}
               </button>
             ))}
           </div>
         </div>
-      </form>
-      <div>
-        <h1 className="font-semibold">Grau de Ensino</h1>
-        <div className="flex overflow-auto gap-2">
-          {graudeEnsino.map((item) => (
-            <button 
-              key={item.id}
-              className={`botao-estilo-5 mb-2 ${
-                formData.grau_ensino === item.id ? 'bg-gray-300' : 'bg-[#F4F4F4]'
-              }`}
-              onClick={() => setFormData((prev) => ({ ...prev, grau_ensino: item.id }))}
-            >
-              {item.text}
+
+        {erro && (
+          <p className="text-red-500 text-sm mt-2">
+            {erro}
+          </p>
+        )}
+
+        <div className={`${isBrowser? 'flex flex-col w-full items-center justify-center' : ''}`}>
+          <div className={`flex flex-col justify-around gap-2 mt-4 ${isBrowser? 'w-72' : 'w-full'}`}>
+            <button className="botao-estilo-1" onClick={handleSubmit}>
+              Concluir Cadastro Mais Tarde
             </button>
-          ))}
+            <button className="botao-estilo-2" onClick={handleSubmit}>
+              Concluir
+            </button>
+          </div>
         </div>
-      </div>
-
-      {erro && (
-        <p className="text-red-500 text-sm mt-2">
-          {erro}
-        </p>
-      )}
-
-      <div className="flex flex-col justify-around gap-2 mt-4 w-full">
-        <button className="botao-estilo-1" onClick={handleSubmit}>
-          Concluir Cadastro Mais Tarde
-        </button>
-        <button className="botao-estilo-2" onClick={handleSubmit}>
-          Concluir
-        </button>
       </div>
     </div>
   )

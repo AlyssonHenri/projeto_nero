@@ -118,8 +118,26 @@
   transition: background-color 0.2s, transform 0.1s;
 }
 
+/* Estilos para telas desktop */
 .leaflet-container {
   height: 100%;
-  width: 100vw;
+  width: 90vw;
   z-index: 1;
+}
+
+/* Estilos para telas mobile */
+@media (max-width: 768px) {
+  .leaflet-container {
+    height: 100%;
+    width: 100vw;
+    z-index: 1;
+  }
+}
+
+body {
+    overflow-x: hidden;
+}
+
+.container {
+    overflow-x: hidden;
 }

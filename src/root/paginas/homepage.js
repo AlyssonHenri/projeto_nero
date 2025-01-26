@@ -4,10 +4,17 @@ import Miniatura from '../componentes/miniatura_post'
 import Post from '../componentes/post'
 import NavBar from '../componentes/nav_bar'
 import { useNavigate } from 'react-router-dom'
+import { Box, Divider } from '@mui/material'
 
 function SkeletonMiniatura() {
     return (
-        <div className='animate-pulse w-[48%] h-48 bg-gray-300 rounded-md'></div>
+        <div>
+            {isBrowser ? (
+                <div className='animate-pulse w-[28%] h-96 bg-gray-300 rounded-md'></div>
+            ) : (
+                <div className='animate-pulse w-[48%] h-48 bg-gray-300 rounded-md'></div>
+            )}
+        </div>
     )
 }
 
@@ -43,12 +50,43 @@ function SkeletonPost() {
 
 function Homepage() {
     const token = localStorage.getItem('token')
+    const id = localStorage.getItem('id')
     const tipo = localStorage.getItem('tipo')
+    const [perfil, setPerfil] = useState()
     const navigate = useNavigate()
     const [miniaturas, setMiniaturas] = useState([])
     const [posts, setPosts] = useState([])
     const [loadingMiniaturas, setLoadingMiniaturas] = useState(true)
     const [loadingPosts, setLoadingPosts] = useState(true)
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const response = await fetch(`https://api.nero.lat/api/usuario/${id}/`, {
+                method: 'GET',
+                headers: {
+                    'accept': 'application/json',
+                    'Authorization': `Token ${token}`,
+                },
+            })
+
+            if (!response.ok) {
+                throw new Error('Erro ao buscar os dados do usuário')
+            }
+
+            const data = await response.json()
+            setPerfil(data)
+        }
+
+        fetchUserData()
+        fetchMinis()
+        fetchPosts()
+
+        const interval = setInterval(() => {
+            fetchPosts()
+        }, 30000) // 30 segundos
+
+        return () => clearInterval(interval)
+    }, [id])
 
     const fetchMinis = async () => {
         try {
@@ -94,30 +132,79 @@ function Homepage() {
         }
     }
 
-    useEffect(() => {
-        fetchMinis()
-        fetchPosts()
-
-        const interval = setInterval(() => {
-            fetchPosts()
-        }, 30000) // Atualiza a cada 30 segundos
-
-        return () => clearInterval(interval) // Limpa o intervalo ao desmontar
-    }, [])
-
     if (isBrowser) {
         return (
-            <div className='flex flex-col items-center justify-center h-screen w-screen'>
-                Acesso indisponível, tente novamente em um celular
+            <div className='relative h-full min-h-screen w-screen '>
+                <div className='flex flex-col'>
+                    { tipo === "cidadão" &&
+                        <>
+                            <NavBar imgPerfil={perfil?.foto_perfil}/>
+                            <div className='flex items-center justify-between px-[10%] mt-6 mb-6'>
+                                <div className='flex items-center justify-between'>
+                                    <img onClick={() => navigate('/perfil')} src={perfil?.foto_perfil || '/images/sem-imagem.png'} className='h-24 w-24 object-cover' alt='foto_perfil'/>
+                                    <h1 className='text-xl font-semibold'>{perfil?.first_name || ''}</h1>
+                                </div>
+                                <div className='w-72'>
+                                    <button className='botao-estilo-2' onClick={() => navigate('/post/novo')}>Criar Postagem</button>
+                                </div>
+                            </div>
+                            <Divider />
+                            <div className='px-[10%] mt-8'>
+                                <h1 className='font-semibold text-3xl mb-3'>Minhas Postagens</h1>
+                                <div className='flex w-full overflow-x-auto gap-4 pb-3 mb-5'>
+                                    {loadingMiniaturas
+                                        ? Array.from({ length: 2 }).map((_, index) => (
+                                            <SkeletonMiniatura key={index} />
+                                        ))
+                                        : miniaturas.map((miniatura, index) => (
+                                            <Miniatura
+                                                key={index}
+                                                id={miniatura.id}
+                                                usuario={miniatura.usuario}
+                                                nome={miniatura.titulo}
+                                                status={miniatura.status}
+                                                imagem={miniatura.imagem}
+                                                tipo={miniatura.natureza}
+                                                perfil={miniatura.usuario}
+                                                criacao={miniatura.criacao}
+                                                votos={miniatura.votos}
+                                                descricao={miniatura.descricao}
+                                                natureza={miniatura.natureza}
+                                            />
+                                        ))}
+                                </div>
+                            </div>
+                            <Divider />
+                            <Box className='px-[10%] max-w-screen mt-8'>
+                                <h1 className='font-semibold text-3xl mb-3'>Feed de Postagens</h1>
+                                <div className='flex flex-col  gap-10 pb-3 mb-16'>
+                                    { posts.map(post => (
+                                        <Post
+                                            key={post.id}
+                                            id={post.id}
+                                            usuario={post.usuario}
+                                            nome={post.titulo}
+                                            status={post.status}
+                                            imagem={post.imagem}
+                                            perfil={post.usuario}
+                                            criacao={post.criacao}
+                                            votos={post.votos}
+                                            descricao={post.descricao}
+                                            natureza={post.natureza}
+                                        />
+                                    ))}
+                                </div>
+                            </Box>
+                        </>
+                    }
+                </div>
             </div>
         )
     }
 
     return (
         <div className='relative h-full min-h-screen w-screen bg-[#e9e8e8]'>
-            <div className='bottom-0 start-0 fixed z-50'>
-                <NavBar />
-            </div>
+            <NavBar />
             <div className='flex flex-col p-3'>
             { tipo === "cidadão" &&
                 <>
@@ -130,10 +217,17 @@ function Homepage() {
                             : miniaturas.map((miniatura, index) => (
                                 <Miniatura
                                     key={index}
-                                    tipo={miniatura.natureza}
+                                    id={miniatura.id}
+                                    usuario={miniatura.usuario}
                                     nome={miniatura.titulo}
                                     status={miniatura.status}
                                     imagem={miniatura.imagem}
+                                    tipo={miniatura.natureza}
+                                    perfil={miniatura.usuario}
+                                    criacao={miniatura.criacao}
+                                    votos={miniatura.votos}
+                                    descricao={miniatura.descricao}
+                                    natureza={miniatura.natureza}
                                 />
                             ))}
                     </div>
@@ -143,7 +237,7 @@ function Homepage() {
                 <h1 className='font-semibold text-xl mb-3 mt-5'>Feed de Postagens</h1>
                 <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 pb-3 mb-16'>
                     {loadingPosts
-                        ? Array.from({ length: 3 }).map((_, index) => (
+                        ? Array.from({ length: 4 }).map((_, index) => (
                               <SkeletonPost key={index} />
                           ))
                         : posts.map(post => (

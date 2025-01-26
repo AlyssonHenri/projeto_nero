@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { isBrowser } from 'react-device-detect'
+import { isBrowser, isMobile } from 'react-device-detect'
 import NavBar from '../componentes/nav_bar'
 import { useNavigate } from 'react-router-dom'
 import { RiArrowLeftSLine } from 'react-icons/ri'
@@ -170,24 +170,16 @@ function Perfil() {
         { id: '1', text: 'Analfabeto' },
     ]
 
-    if (isBrowser) {
-        return (
-            <div className='flex flex-col items-center justify-center h-screen w-screen'>
-                Acesso indisponível, tente novamente em um celular
-            </div>
-        )
-    }
-
     return (
         <div className='relative h-full min-h-screen w-screen bg-[#e9e8e8]'>
-            <div className='fixed top-0 flex items-center bg-white w-screen min-h-12 text-xl font-semibold shadow-inner gap-2'>
-                <RiArrowLeftSLine className='ml-2' onClick={() => navigate(-1)} size={30} />
-                <h1 className="font-semibold text-xl -mt-[1px]">Meu Perfil</h1>
-            </div>
-            <div className='bottom-0 start-0 fixed z-50'>
-                <NavBar />
-            </div>
-            <div className='flex flex-row items-center justify-start ml-3 mt-12 py-1 -mb-3'>
+            {isMobile && 
+                <div className='fixed top-0 flex items-center bg-white w-screen min-h-12 text-xl font-semibold shadow-inner gap-2'>
+                    <RiArrowLeftSLine className='ml-2' onClick={() => navigate(-1)} size={30} />
+                    <h1 className="font-semibold text-xl -mt-[1px]">Meu Perfil</h1>
+                </div>
+            }
+            <NavBar />
+            <div className={`flex flex-row items-center justify-start ml-3 py-1 -mb-3 ${isBrowser ? 'px-[5%]' : 'mt-12'}`}>
                 <img
                     src={formData.profile_image}
                     alt='Imagem de perfil'
@@ -195,7 +187,7 @@ function Perfil() {
                 />
                 <h1>{formData.username}</h1>
             </div>
-            <div className="flex flex-col h-screen w-[95%] ml-3">
+            <div className={`flex flex-col h-screen w-[95%] ml-3 ${isBrowser ? 'px-[5%]' : ''}`}>
                 <form>
                     <div className="mt-2">
                         <h1 className="font-semibold flex">Nome Completo</h1>
@@ -271,10 +263,12 @@ function Perfil() {
                         ))}
                     </div>
                 </div>
-                <div className="flex flex-col justify-around gap-2 mt-4 w-full">
-                    <button className="botao-estilo-2" onClick={handleEditProfile}>
-                        Editar Perfil
-                    </button>
+                <div className={`${isBrowser? 'flex flex-col w-full items-center justify-center' : ''}`}>
+                    <div className={`flex flex-col  gap-2 mt-4 ${isBrowser ? 'w-72' : 'w-full'}`}>
+                        <button className="botao-estilo-2" onClick={handleEditProfile}>
+                            Editar Perfil
+                        </button>
+                    </div>
                 </div>
                 <h1 className='font-semibold text-xl mb-3 mt-2'>Minhas Postagens</h1>
                 {postagens.map((postagem, index) => (

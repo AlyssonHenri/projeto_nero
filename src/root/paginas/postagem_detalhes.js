@@ -4,7 +4,7 @@ import NavBar from '../componentes/nav_bar'
 import Comentario from '../componentes/comentario'
 import { RiArrowLeftSLine } from 'react-icons/ri'
 import { PiSirenDuotone } from 'react-icons/pi'
-import { Modal, Box, TextField, } from '@mui/material'
+import { Modal, Box, TextField, CircularProgress, } from '@mui/material'
 
 function Detalhes() {
     const navigate = useNavigate()
@@ -14,6 +14,8 @@ function Detalhes() {
     const [showAvaliacaoModal, setShowAvaliacaoModal] = useState(false)
     const [novoComentario, setNovoComentario] = useState("")
     const [avaliacao, setAvaliacao] = useState(0)
+    const [loadingF, setLoadingF] = useState(false)
+    const [loadingR, setLoadingR] = useState(false)
     const token = localStorage.getItem('token')
     const id = localStorage.getItem('id')
     const tipo = localStorage.getItem('tipo')
@@ -80,6 +82,34 @@ function Detalhes() {
             }
         } catch (error) {
             console.error('Erro ao enviar avaliação:', error)
+        }
+    }
+
+    const alterarStatusReclama = async (status) => {
+        try {
+            const formData = new FormData()
+            formData.append('novo_status', status)
+    
+            const response = await fetch(`https://api.nero.lat/api/postagem/${state.id}/atualizar-status/`, {
+                method: 'PATCH',
+                headers: {
+                    accept: 'application/json',
+                    Authorization: `Token ${token}`,
+                },
+                body: formData,
+            })
+    
+            if (response.ok) {
+                console.log('Status alterado com sucesso')
+            } else {
+                console.error('Erro ao alterar status:', await response.text())
+            }
+        } catch (error) {
+            console.error('Erro ao alterar status:', error)
+        } finally {
+            setLoadingR(false)
+            setLoadingF(false)
+            navigate('/home')
         }
     }
 
@@ -229,20 +259,19 @@ function Detalhes() {
                         </div>
                     ) : (
                         <div className='flex gap-2 mt-4 mb-[100px]'>
-                            <button className='botao-estilo-1' >
+                            <button className='botao-estilo-1' onClick={() => setShowComentarioModal(true)}>
                                 Comentar
                             </button>
-                            <button className='botao-estilo-1' >
-                                Reportar
+                            <button disabled={loadingR} className='botao-estilo-1' onClick={() => { setLoadingF(true); alterarStatusReclama(3); }}>
+                                {loadingF ? <CircularProgress sx={{mb: -0.5}} size={20} color="inherit"/> : 'Reportar'}
                             </button>
-                            <button className='botao-estilo-2' >
-                                Resolver
+                            <button disabled={loadingF} className='botao-estilo-2' onClick={() => { setLoadingR(true); alterarStatusReclama(2); }}>
+                                {loadingR ? <CircularProgress sx={{mb: -0.5}} size={20} color="inherit"/> : 'Resolver'}
                             </button>
                         </div>
                     )
                 )}
             </div>
-            {/* Modal de Comentários */}
             <Modal open={showComentarioModal} onClose={() => setShowComentarioModal(false)}>
                 <Box
                     sx={{
@@ -270,7 +299,6 @@ function Detalhes() {
                 </Box>
             </Modal>
 
-            {/* Modal de Avaliação */}
             <Modal open={showAvaliacaoModal} onClose={() => setShowAvaliacaoModal(false)}>
                 <Box
                     sx={{

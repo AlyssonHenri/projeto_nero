@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react"
-import { isBrowser } from "react-device-detect"
+import { isBrowser, isMobile } from "react-device-detect"
 import NavBar from "../componentes/nav_bar"
-import { MapContainer, TileLayer, Marker, Tooltip, Polygon } from "react-leaflet"
+import { MapContainer, TileLayer, Marker, Tooltip, Polygon, useMap, useMapEvent } from "react-leaflet"
 import { useNavigate } from "react-router-dom"
 import "leaflet/dist/leaflet.css"
 import L from "leaflet"
 import { RiArrowLeftSLine } from "react-icons/ri"
 import dayjs from "dayjs"
 
-function Homepage() {
+function Mapa() {
     const token = localStorage.getItem("token")
     const navigate = useNavigate()
     const [posicaoAtual, setPosicaoAtual] = useState(null)
@@ -17,6 +17,7 @@ function Homepage() {
     const [postagens, setPostagens] = useState([])
     const [modalAberto, setModalAberto] = useState(null)
     const [dadosCidades, setDadosCidades] = useState([])
+    const [zoomLevel, setZoomLevel] = useState(13) // 13 é o mesmo valor do zoom inicial no mapa, deixar esses 2 sempre o mesmo
     const [filtros, setFiltros] = useState({
         tempo: null,
         categoria: null,
@@ -45,6 +46,15 @@ function Homepage() {
         Hoje: () => dayjs().startOf("day").toISOString(),
         "Esta Semana": () => dayjs().startOf("week").toISOString(),
         "Este Mês": () => dayjs().startOf("month").toISOString(),
+    }
+
+    const MapEvents = ({ setZoomLevel }) => {
+        useMapEvent({ 
+            zoomend: (e) => {
+                setZoomLevel(e.target.getZoom())
+            },
+        })
+        return null
     }
 
     useEffect(() => {
@@ -169,7 +179,7 @@ function Homepage() {
 
         return (
             <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center z-[99]">
-                <div className="bg-white p-4 rounded shadow-lg w-[90%]">
+                <div className={`bg-white p-4 rounded shadow-lg ${isBrowser ? 'w-[30%]' : 'w-[90%]'}`}>
                     <h2 className="font-semibold text-xl mb-4">{modalAberto}</h2>
                     <div className="flex flex-col gap-2">
                         {opcoes.map((opcao, index) => (
@@ -199,26 +209,44 @@ function Homepage() {
         return true
     })
 
-    if (isBrowser) {
+    const DesenhoRegioes = () => {
+        const map = useMap()
+    
         return (
-            <div className="flex flex-col items-center justify-center h-screen w-screen">
-                <p className="text-lg font-medium">
-                    Acesso indisponível, tente novamente em um dispositivo móvel.
-                </p>
-            </div>
+            <>
+                {dadosCidades.map((cidade) => (
+                    <React.Fragment key={cidade.id}>
+                        {cidade.bairros.map((bairro) => (
+                            <Polygon
+                                key={bairro.id}
+                                positions={bairro.pontos}
+                                fillOpacity={0.1}
+                                pathOptions={{ color: "#494b4f", weight: 1 }}
+                                eventHandlers={{
+                                    click: () => {
+                                        const bounds = L.latLngBounds(bairro.pontos)
+                                        map.fitBounds(bounds)
+                                    },
+                                }}
+                            />
+                        ))}
+                    </React.Fragment>
+                ))}
+            </>
         )
     }
 
     return (
-        <div className="relative h-full w-screen bg-[#e9e8e8]">
-            <div className="fixed top-0 flex items-center bg-white w-screen min-h-12 text-xl font-semibold shadow-inner gap-2">
-                <RiArrowLeftSLine className="ml-2" onClick={() => navigate(-1)} size={30} />
-                <h1 className="font-semibold text-xl -mt-[1px]">Localizar</h1>
-            </div>
-            <div className="bottom-0 start-0 fixed">
-                <NavBar />
-            </div>
-            <div className="flex flex-col h-screen p-3 mt-12">
+        <div className={`relative h-full w-screen bg-[#e9e8e8]`}>
+            {isMobile && 
+                <div className="fixed top-0 flex items-center bg-white w-screen min-h-12 text-xl font-semibold shadow-inner gap-2">
+                    <RiArrowLeftSLine className="ml-2" onClick={() => navigate(-1)} size={30} />
+                    <h1 className="font-semibold text-xl -mt-[1px]">Localizar</h1>
+                </div>
+            }
+            <NavBar />
+            <div className={`flex flex-col h-[93vh] p-3 ${isBrowser ? 'px-[5%]' : 'mt-12'}`}>
+                <h1 className="font-semibold text-xl">Localizar</h1>
                 <input
                     type="text"
                     className="input-generico w-full"
@@ -234,13 +262,16 @@ function Homepage() {
                         <p className="text-lg text-red-600">{erroLocalizacao}</p>
                     </div>
                 ) : (
-                    <div className="w-screen -ml-3 h-[55%]">
+                    <div className={`${isBrowser ? 'h-[70%]' : 'h-[55%]'}`}>
+                        <h1 className="font-semibold text-xl mb-2">Mapa</h1>
                         <MapContainer center={centro} zoom={13}>
                             <TileLayer
                                 attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                             />
-                            {postagensFiltradas.map((loc, index) => (
+                            <DesenhoRegioes />
+                            <MapEvents setZoomLevel={setZoomLevel} />
+                            {zoomLevel >= 14 && postagensFiltradas.map((loc, index) => (
                                 <Marker
                                     key={index}
                                     position={[loc.lat, loc.lng]}
@@ -261,33 +292,11 @@ function Homepage() {
                                     </Tooltip>
                                 </Marker>
                             ))}
-                            {dadosCidades.map((cidade) => (
-                                <React.Fragment key={cidade.id}>
-                                    <Polygon
-                                        positions={cidade.pontos}
-                                        color="blue"
-                                        fillOpacity={0.4}
-                                        pathOptions={{ color: "#0000FF", weight: 2 }}
-                                    />
-        
-                                    {cidade.bairros.map((bairro) => (
-                                        <Polygon
-                                            key={bairro.id}
-                                            positions={bairro.pontos}
-                                            color="green"
-                                            fillOpacity={0.3}
-                                            pathOptions={{ color: "#00FF00", weight: 2 }}
-                                        >
-                                            <Tooltip>{bairro.nome}</Tooltip>
-                                        </Polygon>
-                                    ))}
-                                </React.Fragment>
-                            ))}
                         </MapContainer>
                     </div>
                 )}
 
-                <h1 className="font-semibold text-xl mb-1 mt-4">Filtrar por</h1>
+                <h1 className="font-semibold text-xl mb-1 mt-10">Filtrar por</h1>
                 <div className="flex w-full gap-2 overflow-x-auto pb-3">
                     <button
                         className={`botao-estilo-4 w-full ${
@@ -315,4 +324,4 @@ function Homepage() {
     )
 }
 
-export default Homepage
+export default Mapa
