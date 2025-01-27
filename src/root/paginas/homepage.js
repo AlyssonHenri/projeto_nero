@@ -99,7 +99,7 @@ function Homepage() {
 
             if (response.ok) {
                 const data = await response.json()
-                setMiniaturas(data)
+                setMiniaturas(data.reverse())
             } else {
                 console.error(`Erro ao carregar miniaturas: ${response.status}`)
             }

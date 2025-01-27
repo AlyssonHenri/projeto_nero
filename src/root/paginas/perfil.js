@@ -75,7 +75,7 @@ function Perfil() {
                 }
 
                 const data = await response.json()
-                setPostagens(data)
+                setPostagens(data.reverse())
             } catch (error) {
                 setErro(error.message)
             }
@@ -129,6 +129,10 @@ function Perfil() {
             formDataToSubmit.append('data_nascimento', formData.data_nascimento)
             formDataToSubmit.append('sexo', formData.sexo)
             formDataToSubmit.append('grau_ensino', formData.grau_ensino)
+
+            if (formData.cpf) {
+                formData.cpf = formData.cpf.replace(/\D/g, '')
+            }
     
             const response = await fetch(`https://api.nero.lat/api/usuario/${id}/`, {
                 method: 'PATCH',

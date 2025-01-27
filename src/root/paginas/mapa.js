@@ -262,8 +262,8 @@ function Mapa() {
                         <p className="text-lg text-red-600">{erroLocalizacao}</p>
                     </div>
                 ) : (
-                    <div className={`${isBrowser ? 'h-[70%]' : 'h-[55%]'}`}>
-                        <h1 className="font-semibold text-xl mb-2">Mapa</h1>
+                    <div className={`${isBrowser ? 'h-[70%]' : 'h-[55%] -ml-3'}`}>
+                        <h1 className="font-semibold text-xl mb-2 ml-3">Mapa</h1>
                         <MapContainer center={centro} zoom={13}>
                             <TileLayer
                                 attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -316,7 +316,7 @@ function Mapa() {
                     </button>
                 </div>
 
-                <button className="botao-estilo-2 mt-2">Criar Postagem</button>
+                <button onClick={() => navigate('/post/novo')} className="botao-estilo-2 mt-2">Criar Postagem</button>
             </div>
 
             {renderModal()}

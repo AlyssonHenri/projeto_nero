@@ -54,22 +54,24 @@ function Cadastro() {
       setErro('Preencha os campos obrigatórios.')
       return
     }
-
+  
     if (formData.password.length < 8) {
       setErro('A senha deve ter pelo menos 8 caracteres.')
       return
     }
-
-    if (!validarCPF(formData.cpf)) {
-      setErro('O CPF informado é inválido.')
-      return
+  
+    if(formData.cpf.length > 0) {
+      if (!validarCPF(formData.cpf)) {
+        setErro('O CPF informado é inválido.')
+        return
+      }
     }
-
+  
     if (!formData.email.includes('@')) {
       setErro('Por favor, insira um email válido.')
       return
     }
-
+  
     const camposPreenchidos = Object.fromEntries(
       Object.entries(formData).filter(([key, value]) => {
         if (key === 'username') {
@@ -78,7 +80,11 @@ function Cadastro() {
         return value !== ''
       })
     )
-
+  
+    if (camposPreenchidos.cpf) {
+      camposPreenchidos.cpf = camposPreenchidos.cpf.replace(/\D/g, '')
+    }
+  
     try {
       const response = await fetch('https://api.nero.lat/api/usuario/', {
         method: 'POST',
@@ -87,7 +93,7 @@ function Cadastro() {
         },
         body: JSON.stringify(camposPreenchidos),
       })
-
+      console.log(camposPreenchidos)
       if (response.ok) {
         await handleLogin(camposPreenchidos.username, camposPreenchidos.password)
       } else {

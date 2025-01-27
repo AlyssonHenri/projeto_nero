@@ -2,8 +2,10 @@ import React, { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
+import NavBar from '../componentes/nav_bar'
 import 'leaflet/dist/leaflet.css'
 import { RiArrowLeftSLine } from 'react-icons/ri'
+import { isBrowser, isMobile } from 'react-device-detect'
 
 const iconePersonalizado = () => {
     const svgIcon = `
@@ -154,13 +156,17 @@ function NovoPost() {
     
     return (
         <div className="flex flex-col h-screen bg-[#e9e8e8]">
-            <div className='fixed top-0 flex items-center bg-white w-screen min-h-12 text-xl font-semibold shadow-inner gap-2'>
-                <RiArrowLeftSLine className='ml-2' onClick={() => navigate(-1)} size={30} />
-                <h1 className='shadow-2xl -mt-[2px]'>Criar Postagem</h1>
-            </div>
+            {isMobile && 
+                <div className="fixed top-0 flex items-center bg-white w-screen min-h-12 text-xl font-semibold shadow-inner gap-2">
+                    <RiArrowLeftSLine className="ml-2" onClick={() => navigate(-1)} size={30} />
+                    <h1 className="font-semibold text-xl -mt-[1px]">Criar Postagem</h1>
+                </div>
+            }
+            <NavBar />
 
-            <div className='mx-3'>
-                <div className="mt-14">
+            <div className={`mx-3 ${isBrowser ? 'px-[5%]' : 'mt-10'}`}>
+                {isBrowser && <h1 className="text-2xl font-semibold mt-5">Criar Postagem</h1>}
+                <div className="mt-5">
                     <h1 className="font-semibold">Titulo</h1>
                     <input
                         type="text"
@@ -204,7 +210,7 @@ function NovoPost() {
 
                 <div className="mt-4">
                     <h1 className="font-semibold">Localização</h1>
-                    <div className="flex gap-2 mb-2">
+                    <div className={`flex gap-2 mb-2 ${isBrowser ? 'w-[400px]' : ''}`}>
                         <button
                             className="botao-estilo-1"
                             onClick={centralizarMapa}
@@ -238,7 +244,7 @@ function NovoPost() {
                         <MapContainer
                             center={formData.geolocalizacao || [-23.55052, -46.633308]}
                             zoom={13}
-                            style={{ height: "200px", width: "100%" }}
+                            style={{ height: isBrowser ? "30vh" : "200px", width: "100%" }}
                             whenCreated={(mapInstance) => {
                                 mapRef.current = mapInstance
                             }}
@@ -250,7 +256,7 @@ function NovoPost() {
                             <PinPos />
                         </MapContainer>
                     )}
-                    <h1 className="-mt-2 text-xs text-gray-400">Clique no mapa para selecionar a localização</h1>
+                    <h1 className="text-xs text-gray-400">Clique no mapa para selecionar a localização</h1>
                 </div>
 
                 {error && (
@@ -258,11 +264,19 @@ function NovoPost() {
                         Preencha os campos obrigatórios corretamente.
                     </p>
                 )}
+                
 
-                <div className="flex flex-col justify-around gap-2 mt-4 w-full">
-                    <button className="botao-estilo-2 mb-20" onClick={handleSubmit}>
-                        Postar
-                    </button>
+                <div className={`${isBrowser? 'flex gap-2 w-full items-center justify-center' : 'flex-col'}`}>
+                    <div className={`flex flex-col gap-2 mt-4 ${isBrowser ? 'w-72' : 'w-full'}`}>
+                        <button className={`botao-estilo-2 ${isBrowser ? 'mb-20' : ''}`} onClick={handleSubmit}>
+                            Postar
+                        </button>
+                    </div>
+                    <div className={`flex flex-col gap-2 mt-4 ${isBrowser ? 'w-72' : 'w-full'}`}>
+                        <button className="botao-estilo-4 mb-20" onClick={handleSubmit}>
+                            😶 Anônimo
+                        </button>
+                    </div>
                 </div>
             </div>
 

@@ -62,11 +62,11 @@ function Miniatura({ id, usuario, tipo, nome, status, imagem, perfil, criacao, v
     return (
        <>
          {isBrowser ? (
-            <div className='relative shadow flex flex-col min-w-[28%] max-w-[28%] h-96'>
+            <div className='relative shadow flex flex-col w-[24%] h-96'>
                 <div className={`relative w-full h-full`}>
                     <img
                         alt={`Imagem de ${nome}`}
-                        src={`https://api.nero.lat/${imagem}`}
+                        src={imagem ? `https://api.nero.lat/${imagem}` : '/images/sem-imagem.png'}
                         className='w-full h-[350px] object-cover rounded-t-lg rounded-ss-xl overflow-hidden'
                     />
                     <h1 className={`absolute ${corDeFundo} p-1 rounded-ss-lg rounded-ee-lg text-white top-0 text-sm`}>
@@ -86,7 +86,7 @@ function Miniatura({ id, usuario, tipo, nome, status, imagem, perfil, criacao, v
                 <div className={`relative w-full h-full`}>
                     <img
                         alt={`Imagem de ${nome}`}
-                        src={`https://api.nero.lat/${imagem}`}
+                        src={imagem ? `https://api.nero.lat/${imagem}` : '/images/sem-imagem.png'}
                         className='w-full h-[150px] object-cover rounded-t-lg rounded-ss-xl overflow-hidden'
                     />
                     <h1 className={`absolute ${corDeFundo} p-1 rounded-ss-lg rounded-ee-lg text-white top-0 text-sm`}>
