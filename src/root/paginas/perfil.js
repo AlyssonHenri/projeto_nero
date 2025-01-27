@@ -280,7 +280,7 @@ function Perfil() {
                         <div className='flex flex-row justify-between h-11'>
                             <div className='flex start-0'>
                                 <div className={`mt-2 mr-2 rounded-full h-6 w-6 bg-gray-500}`}>
-                                    <h1 className='ml-[1px]'>{postagem.status === 'pendente' ? '🔴' : '🟢'}</h1>
+                                    <h1 className='ml-[1px]'>{postagem.status === '1' ? '🔴' : '🟢'}</h1>
                                 </div>
                                 <div className='flex flex-col'>
                                     <h1 className='text-sm font-semibold'>{postagem.titulo}</h1>
