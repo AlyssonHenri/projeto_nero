@@ -173,7 +173,7 @@ function Perfil() {
         { id: '2', text: 'Até o 5º Ano Fundamental Incompleto' },
         { id: '1', text: 'Analfabeto' },
     ]
-
+console.log(postagens)
     return (
         <div className='relative h-full min-h-screen w-screen bg-[#e9e8e8]'>
             {isMobile && 
@@ -280,7 +280,9 @@ function Perfil() {
                         <div className='flex flex-row justify-between h-11'>
                             <div className='flex start-0'>
                                 <div className={`mt-2 mr-2 rounded-full h-6 w-6 bg-gray-500}`}>
-                                    <h1 className='ml-[1px]'>{postagem.status === '1' ? '🔴' : '🟢'}</h1>
+                                    <h1 className='ml-[1px]'>
+                                        {parseInt(postagem.status) === 1 ? '🔴' : parseInt(postagem.status) === 2 ? '🟢' : '⚪'}
+                                    </h1>
                                 </div>
                                 <div className='flex flex-col'>
                                     <h1 className='text-sm font-semibold'>{postagem.titulo}</h1>
@@ -288,10 +290,12 @@ function Perfil() {
                                 </div>
                             </div>
                             <div>
-                                <h1 className='font-semibold mr-2 mt-2'>Status: {`${postagem.status === 1 ? 'pendente' : 'resolvido'}`}</h1>
+                                <h1 className='font-semibold mr-2 mt-2'>
+                                    Status: {parseInt(postagem.status) === 1 ? 'pendente' : parseInt(postagem.status) === 2 ? 'resolvido' : 'falso'}
+                                </h1>
                             </div>
                         </div>
-                        {index < postagens.length - 0 && <Divider />}
+                        {index < postagens.length - 1 && <Divider />}
                     </React.Fragment>
                 ))}
             </div>
