@@ -177,7 +177,7 @@ function Post({ id, usuario, nome, status, imagem, perfil, criacao, votos, descr
 
     const fotoPerfil = perfilData?.foto_perfil ? `https://api.nero.lat/${perfilData.foto_perfil}` : '/images/sem-foto.png'
     const nomePerfil = perfilData?.first_name || 'Anônimo'
-    const isCurrentUser = () => parseInt(id) === parseInt(user_id)
+    const isCurrentUser = parseInt(usuario) === parseInt(user_id)
     const isTipoOuvidoria = () => tipo === "ouvidoria"
 
     if(isBrowser){
@@ -239,7 +239,7 @@ function Post({ id, usuario, nome, status, imagem, perfil, criacao, votos, descr
                             </div>
                         ))}
                     </div>
-                    { !isCurrentUser() && (
+                    { !isCurrentUser && (
                         !isTipoOuvidoria() ? (
                             <div className='flex gap-2 mt-4 '>
                                 <button className='botao-estilo-1' onClick={() => setShowComentarioModal(true)}>

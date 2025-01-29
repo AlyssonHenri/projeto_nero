@@ -1,11 +1,42 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { isBrowser } from 'react-device-detect'
 import { FcHome, FcPanorama } from 'react-icons/fc'
 import { IoPersonCircle } from 'react-icons/io5'
 import { useNavigate } from 'react-router-dom'
 
-function NavBar({imgPerfil}) {
+function NavBar() {
+    const token = localStorage.getItem('token')
+    const id = localStorage.getItem('id')
     const navigate = useNavigate()
+    const [imgPerfil, setImgPerfil] = useState('/images/sem-imagem.png')
+
+    useEffect(() => {
+        const fetchFotoPerfil = async () => {
+            try {
+                const response = await fetch(`https://api.nero.lat/api/usuario/${id}/`, {
+                    headers: {
+                        'accept': 'application/json',
+                        'Authorization': `Token ${token}`,
+                    }
+                })
+
+                if (response.ok) {
+                    const data = await response.json()
+                    setImgPerfil(`https://api.nero.lat${data.foto_perfil || '/images/sem-imagem.png'}`)
+                } else {
+                    console.error('Erro ao buscar a foto de perfil:', response.statusText)
+                }
+            } catch (error) {
+                console.error('Erro na chamada da API:', error)
+            }
+        }
+
+        fetchFotoPerfil()
+    }, [])
+
+    const handleImageError = (event) => {
+        event.target.src = '/images/sem-imagem.png'
+    }
 
     return (
         <div>
@@ -16,7 +47,7 @@ function NavBar({imgPerfil}) {
                         <h1 onClick={() => navigate('/home')}>Inicio</h1>
                         <h1 onClick={() => navigate('/mapa')}>Mapa Interativo</h1>
                         <h1 onClick={() => navigate('/perfil')}>Perfil</h1>
-                        <img onClick={() => navigate('/perfil')} src={imgPerfil || '/images/sem-imagem.png'} className='h-14 w-14 object-cover' alt='foto_perfil'/>
+                        <img onError={handleImageError} onClick={() => navigate('/perfil')} src={imgPerfil} className='h-14 w-14 rounded-full object-cover' alt='foto_perfil'/>
                     </div>
                 </div>
             ) : (        

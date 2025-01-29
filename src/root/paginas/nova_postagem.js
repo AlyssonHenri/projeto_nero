@@ -14,7 +14,7 @@ const iconePersonalizado = () => {
         </svg>
     `
     return new L.Icon({
-        iconUrl: `data:image/svg+xml;base64,${btoa(svgIcon)}`,
+        iconUrl: `data:image/svg+xmlbase64,${btoa(svgIcon)}`,
         iconSize: [30, 30],
     })
 }
@@ -35,7 +35,7 @@ function NovoPost() {
     const [erroLocalizacao, setErroLocalizacao] = useState(null)
     const [pinPosition, setPinPosition] = useState(null)
     const [imagemModalVisivel, setImagemModalVisivel] = useState(false)
-    const [dadosImagem, setDadosImagem] = useState(null);
+    const [dadosImagem, setDadosImagem] = useState(null)
 
     const natureza = [
         { id: '1', text: 'Infraestrutura', cor1: 'rgb(48,158,238)', cor2: 'rgb(75,136,181)' },
@@ -76,18 +76,18 @@ function NovoPost() {
     }
 
     const handleImageChange = async (e) => {
-        const file = e.target.files && e.target.files[0];
+        const file = e.target.files && e.target.files[0]
         if (file) {
-          const reader = new FileReader();
+          const reader = new FileReader()
           reader.onloadend = () => {
             setDadosImagem({
               previsaoImagem: reader.result,
               arquivoImagem: file,
-            });
-          };
-          reader.readAsDataURL(file);
+            })
+          }
+          reader.readAsDataURL(file)
         }
-    };
+    }
 
     const centralizarMapa = () => {
         navigator.geolocation.getCurrentPosition(
@@ -111,48 +111,49 @@ function NovoPost() {
         return pinPosition ? <Marker position={pinPosition} icon={iconePersonalizado()}></Marker> : null
     }
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (isAnonymous = false) => {
         if (!formData.titulo || !formData.descricao || !formData.natureza) {
-            alert("Por favor, preencha todos os campos obrigatórios.");
-            return;
+            alert("Por favor, preencha todos os campos obrigatórios.")
+            return
         }
     
-        const formDataToSend = new FormData();
-        formDataToSend.append('titulo', formData.titulo);
-        formDataToSend.append('descricao', formData.descricao);
-        formDataToSend.append('natureza', formData.natureza);
+        const formDataToSend = new FormData()
+        formDataToSend.append('titulo', formData.titulo)
+        formDataToSend.append('descricao', formData.descricao)
+        formDataToSend.append('natureza', formData.natureza)
     
         if (dadosImagem?.arquivoImagem) {
-            formDataToSend.append("imagem", dadosImagem.arquivoImagem);
+            formDataToSend.append("imagem", dadosImagem.arquivoImagem)
         }
         
         if (formData.geolocalizacao) {
-            const { lat, lng } = formData.geolocalizacao;
-            formDataToSend.append('geolocalizacao', `${lat},${lng}`);
+            const { lat, lng } = formData.geolocalizacao
+            formDataToSend.append('geolocalizacao', `${lat},${lng}`)
         }
     
-        try {
+        try {    
             const response = await fetch('https://api.nero.lat/api/postagem/', {
                 method: 'POST',
                 headers: {
+                    'accept': 'application/json',
                     'Authorization': `Token ${token}`,
                 },
                 body: formDataToSend,
-            });
+            })
     
             if (response.ok) {
-                alert('Postagem criada com sucesso!');
-                navigate('/home');
+                alert('Postagem criada com sucesso!')
+                navigate('/home')
             } else {
-                const errorData = await response.json();
-                console.error("Erro da API:", errorData);
-                alert('Erro ao criar postagem.');
+                const errorData = await response.json()
+                console.error("Erro da API:", errorData)
+                alert('Erro ao criar postagem.')
             }
         } catch (error) {
-            console.error("Erro na requisição:", error);
-            alert('Erro ao criar postagem.');
+            console.error("Erro na requisição:", error)
+            alert('Erro ao criar postagem.')
         }
-    };
+    }
     
     return (
         <div className="flex flex-col h-screen bg-[#e9e8e8]">
@@ -272,11 +273,13 @@ function NovoPost() {
                             Postar
                         </button>
                     </div>
-                    <div className={`flex flex-col gap-2 mt-4 ${isBrowser ? 'w-72' : 'w-full'}`}>
-                        <button className="botao-estilo-4 mb-20" onClick={handleSubmit}>
-                            😶 Anônimo
-                        </button>
-                    </div>
+                    {false &&
+                        <div className={`flex flex-col gap-2 mt-4 ${isBrowser ? 'w-72' : 'w-full'}`}>
+                            <button className="botao-estilo-4 mb-20" onClick={handleSubmit}>
+                                😶 Anônimo
+                            </button>
+                        </div>
+                    }
                 </div>
             </div>
 

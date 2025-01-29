@@ -51,10 +51,12 @@ function Miniatura({ id, usuario, tipo, nome, status, imagem, perfil, criacao, v
 
     const statusInfo = {
         1: { emoji: '🔴', texto: 'Pendente' },
-        2: { emoji: '🟢', texto: 'Resolvido' }
+        2: { emoji: '🟢', texto: 'Resolvido' },
+        3: { emoji: '⚠️', texto: 'Cancelada' } // Adicionando o status "Cancelada"
     }
 
-    const { emoji, texto } = statusInfo[status.toLowerCase()] || statusInfo.pendente
+    // Acessa diretamente statusInfo[status] e usa statusInfo[1] como fallback
+    const { emoji, texto } = statusInfo[status] || statusInfo[1]
 
     const fotoPerfil = perfilData?.foto_perfil ? `https://api.nero.lat/${perfilData.foto_perfil}` : '/images/sem-foto.png'
     const nomePerfil = perfilData?.first_name || 'Anônimo'
@@ -62,7 +64,7 @@ function Miniatura({ id, usuario, tipo, nome, status, imagem, perfil, criacao, v
     return (
        <>
          {isBrowser ? (
-            <div className='relative shadow flex flex-col w-[24%] h-96'>
+            <div className='relative shadow flex flex-col min-w-[24%] max-w-[24%] h-96'>
                 <div className={`relative w-full h-full`}>
                     <img
                         alt={`Imagem de ${nome}`}

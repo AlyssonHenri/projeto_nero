@@ -50,7 +50,7 @@ function Perfil() {
                     cpf: data.cpf || '',
                     grau_ensino: data.grau_ensino || '',
                     data_nascimento: data.data_nascimento || '',
-                    profile_image: data.profile_image || '/images/sem-imagem.png',
+                    profile_image: 'https://api.nero.lat'+data.foto_perfil || '/images/sem-imagem.png',
                 }))
             } catch (error) {
                 setErro(error.message)
@@ -86,27 +86,27 @@ function Perfil() {
 
     const validarCPF = (cpf) => {
         cpf = cpf.replace(/\D/g, '')
-    
+
         if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false
-    
+
         let soma = 0
         let resto
-    
+
         for (let i = 1; i <= 9; i++) soma += parseInt(cpf[i - 1]) * (11 - i)
         resto = (soma * 10) % 11
         if (resto === 10 || resto === 11) resto = 0
         if (resto !== parseInt(cpf[9])) return false
-    
+
         soma = 0
-        
+
         for (let i = 1; i <= 10; i++) soma += parseInt(cpf[i - 1]) * (12 - i)
         resto = (soma * 10) % 11
         if (resto === 10 || resto === 11) resto = 0
         if (resto !== parseInt(cpf[10])) return false
-    
+
         return true
     }
-    
+
     const handleChange = (e) => {
         const { name, value } = e.target
         if (name === 'cpf' && !validarCPF(value)) {
@@ -133,7 +133,7 @@ function Perfil() {
             if (formData.cpf) {
                 formData.cpf = formData.cpf.replace(/\D/g, '')
             }
-    
+
             const response = await fetch(`https://api.nero.lat/api/usuario/${id}/`, {
                 method: 'PATCH',
                 headers: {
@@ -141,11 +141,11 @@ function Perfil() {
                 },
                 body: formDataToSubmit,
             })
-    
+
             if (!response.ok) {
                 throw new Error('Erro ao editar o perfil. Verifique os dados e tente novamente.')
             }
-    
+
             const updatedData = await response.json()
             setFormData((prev) => ({
                 ...prev,
@@ -155,6 +155,39 @@ function Perfil() {
         } catch (error) {
             setErro(error.message)
             alert(`Erro ao atualizar perfil: ${error.message}`)
+        }
+    }
+
+    const handleProfileImageChange = async (e) => {
+        const file = e.target.files[0]
+        if (file) {
+            const formData = new FormData()
+            formData.append('foto_perfil', file)
+
+            try {
+                const response = await fetch('https://api.nero.lat/api/usuario/foto-perfil/', {
+                    method: 'PUT',
+                    headers: {
+                        'accept': 'application/json',
+                        'Authorization': `Token ${token}`,
+                    },
+                    body: formData,
+                })
+
+                if (!response.ok) {
+                    throw new Error('Erro ao enviar a foto de perfil')
+                }
+
+                const data = await response.json()
+                setFormData((prev) => ({
+                    ...prev,
+                    profile_image: data.profile_image,
+                }))
+                alert('Foto de perfil atualizada com sucesso!')
+            } catch (error) {
+                setErro(error.message)
+                alert(`Erro ao atualizar a foto de perfil: ${error.message}`)
+            }
         }
     }
 
@@ -173,7 +206,11 @@ function Perfil() {
         { id: '2', text: 'Até o 5º Ano Fundamental Incompleto' },
         { id: '1', text: 'Analfabeto' },
     ]
-console.log(postagens)
+
+    const handleImageError = (event) => {
+        event.target.src = '/images/sem-imagem.png'
+    }
+    
     return (
         <div className='relative h-full min-h-screen w-screen bg-[#e9e8e8]'>
             {isMobile && 
@@ -184,10 +221,20 @@ console.log(postagens)
             }
             <NavBar />
             <div className={`flex flex-row items-center justify-start ml-3 py-1 -mb-3 ${isBrowser ? 'px-[5%]' : 'mt-12'}`}>
-                <img
-                    src={formData.profile_image}
-                    alt='Imagem de perfil'
-                    className='h-14 w-14 object-cover'
+                <label htmlFor="profile-image-upload" className="cursor-pointer">
+                    <img
+                        src={formData.profile_image}
+                        alt='Imagem de perfil'
+                        className='h-14 w-14 rounded-full mr-2 object-cover'
+                        onError={handleImageError}
+                    />
+                </label>
+                <input
+                    id="profile-image-upload"
+                    type="file"
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    onChange={handleProfileImageChange}
                 />
                 <h1>{formData.username}</h1>
             </div>
@@ -281,7 +328,7 @@ console.log(postagens)
                             <div className='flex start-0'>
                                 <div className={`mt-2 mr-2 rounded-full h-6 w-6 bg-gray-500}`}>
                                     <h1 className='ml-[1px]'>
-                                        {parseInt(postagem.status) === 1 ? '🔴' : parseInt(postagem.status) === 2 ? '🟢' : '⚪'}
+                                        {parseInt(postagem.status) === 1 ? '🔴' : parseInt(postagem.status) === 2 ? '🟢' : '⚠️'}
                                     </h1>
                                 </div>
                                 <div className='flex flex-col'>

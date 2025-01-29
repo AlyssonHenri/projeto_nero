@@ -19,9 +19,9 @@ function Mapa() {
     const [dadosCidades, setDadosCidades] = useState([])
     const [zoomLevel, setZoomLevel] = useState(13) // 13 é o mesmo valor do zoom inicial no mapa, deixar esses 2 sempre o mesmo
     const [filtros, setFiltros] = useState({
-        tempo: null,
-        categoria: null,
-        avaliacoes: null,
+        tempo: [],
+        categoria: [],
+        avaliacoes: [],
     })
 
     const tipoCor = {
@@ -162,9 +162,10 @@ function Mapa() {
     const aplicarOuRemoverFiltro = (tipo, valor) => {
         setFiltros((prev) => ({
             ...prev,
-            [tipo]: prev[tipo] === valor ? null : valor,
+            [tipo]: prev[tipo].includes(valor)
+                ? prev[tipo].filter((v) => v !== valor)
+                : [...prev[tipo], valor],
         }))
-        fecharModal()
     }
 
     const renderModal = () => {
@@ -186,7 +187,7 @@ function Mapa() {
                             <button
                                 key={index}
                                 className={`botao-estilo-4 ${
-                                    filtros[modalAberto.toLowerCase()] === opcao ? "bg-[#022148c5] text-white" : ""
+                                    filtros[modalAberto.toLowerCase()].includes(opcao) ? "bg-[#022148c5] text-white" : ""
                                 }`}
                                 onClick={() => aplicarOuRemoverFiltro(modalAberto.toLowerCase(), opcao)}
                             >
@@ -203,9 +204,12 @@ function Mapa() {
     }
 
     const postagensFiltradas = postagens.filter((post) => {
-        const filtroDataAtivo = filtros.tempo && intervaloDatas[filtros.tempo]()
-        if (filtroDataAtivo && dayjs(post.criacao).isBefore(filtroDataAtivo)) return false
-        if (filtros.categoria && post.tipo !== filtros.categoria) return false
+        const filtroDataAtivo = filtros.tempo.length > 0
+        if (filtroDataAtivo) {
+            const datasFiltro = filtros.tempo.map((f) => intervaloDatas[f]())
+            if (!datasFiltro.some((data) => dayjs(post.criacao).isAfter(data))) return false
+        }
+        if (filtros.categoria.length > 0 && !filtros.categoria.includes(post.tipo)) return false
         return true
     })
 
@@ -241,18 +245,11 @@ function Mapa() {
             {isMobile && 
                 <div className="fixed top-0 flex items-center bg-white w-screen min-h-12 text-xl font-semibold shadow-inner gap-2">
                     <RiArrowLeftSLine className="ml-2" onClick={() => navigate(-1)} size={30} />
-                    <h1 className="font-semibold text-xl -mt-[1px]">Localizar</h1>
+                    <h1 className="font-semibold text-xl -mt-[1px]">Mapa</h1>
                 </div>
             }
             <NavBar />
             <div className={`flex flex-col h-[93vh] p-3 ${isBrowser ? 'px-[5%]' : 'mt-12'}`}>
-                <h1 className="font-semibold text-xl">Localizar</h1>
-                <input
-                    type="text"
-                    className="input-generico w-full"
-                    placeholder="Entre com nomes de ruas ou bairros"
-                />
-
                 {carregandoLocalizacao ? (
                     <div className="flex justify-center items-center h-[55%]">
                         <p className="text-lg font-medium">Carregando mapa...</p>
@@ -262,7 +259,7 @@ function Mapa() {
                         <p className="text-lg text-red-600">{erroLocalizacao}</p>
                     </div>
                 ) : (
-                    <div className={`${isBrowser ? 'h-[70%]' : 'h-[55%] -ml-3'}`}>
+                    <div className={`${isBrowser ? 'h-[80%]' : 'h-[55%] -ml-3'}`}>
                         <h1 className="font-semibold text-xl mb-2 ml-3">Mapa</h1>
                         <MapContainer center={centro} zoom={13}>
                             <TileLayer
@@ -300,7 +297,7 @@ function Mapa() {
                 <div className="flex w-full gap-2 overflow-x-auto pb-3">
                     <button
                         className={`botao-estilo-4 w-full ${
-                            filtros.tempo ? "bg-[#022148c5] text-white" : ""
+                            filtros.tempo.length > 0 ? "bg-[#022148c5] text-white" : ""
                         }`}
                         onClick={() => abrirModal("Tempo")}
                     >
@@ -308,7 +305,7 @@ function Mapa() {
                     </button>
                     <button
                         className={`botao-estilo-4 w-full  ${
-                            filtros.categoria ? "bg-[#022148c5] text-white" : ""
+                            filtros.categoria.length > 0 ? "bg-[#022148c5] text-white" : ""
                         }`}
                         onClick={() => abrirModal("Categoria")}
                     >

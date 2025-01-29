@@ -132,6 +132,10 @@ function Homepage() {
         }
     }
 
+    const handleImageError = (event) => {
+        event.target.src = '/images/sem-imagem.png'
+    }
+
     if (isBrowser) {
         return (
             <div className='relative h-full min-h-screen w-screen '>
@@ -141,7 +145,13 @@ function Homepage() {
                             <NavBar imgPerfil={perfil?.foto_perfil}/>
                             <div className='flex items-center justify-between px-[10%] mt-6 mb-6'>
                                 <div className='flex items-center justify-between'>
-                                    <img onClick={() => navigate('/perfil')} src={perfil?.foto_perfil || '/images/sem-imagem.png'} className='h-24 w-24 object-cover' alt='foto_perfil'/>
+                                    <img 
+                                        onClick={() => navigate('/perfil')} 
+                                        src={perfil?.foto_perfil ? `https://api.nero.lat${perfil.foto_perfil}` : '/images/sem-imagem.png'} 
+                                        className='h-24 w-24 rounded-full mr-3 object-cover' 
+                                        alt='foto_perfil'
+                                        onError={handleImageError}
+                                    />
                                     <h1 className='text-xl font-semibold'>{perfil?.first_name || ''}</h1>
                                 </div>
                                 <div className='w-72'>
