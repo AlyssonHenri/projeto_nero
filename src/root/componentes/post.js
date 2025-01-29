@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import Comentario from './comentario'
 import { Box, CircularProgress, Modal, TextField } from '@mui/material'
 
-function Post({ id, usuario, nome, status, imagem, perfil, criacao, votos, descricao, natureza }) {
+function Post({ id, titulo, usuario, nome, status, imagem, perfil, criacao, votos, descricao, natureza }) {
     const token = localStorage.getItem('token')
     const user_id = localStorage.getItem('id')
     const tipo = localStorage.getItem('tipo')
@@ -361,7 +361,7 @@ function Post({ id, usuario, nome, status, imagem, perfil, criacao, votos, descr
                 <button
                     onClick={() => {
                         navigate(`/post/${id}`, {
-                            state: { id, nome, usuario, status, imagem, fotoPerfil, nomePerfil, data, hora, votos, descricao, natureza }
+                            state: { id, titulo, nome, usuario, status, imagem, fotoPerfil, nomePerfil, data, hora, votos, descricao, natureza }
                         })
                     }}
                     className='botao-estilo-3 px-3 h-8 mr-2'

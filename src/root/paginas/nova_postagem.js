@@ -189,7 +189,7 @@ function NovoPost() {
                         value={formData.descricao}
                         onChange={handleChange}
                     />
-                    <h1 className="-mt-2 text-xs text-gray-400">Seja específico e forneça a maior quantidade de detalhes possíveis</h1>
+                    <h1 className="-mt-2 text-xs text-gray-400">Seja específico(a) e forneça a maior quantidade de detalhes possíveis</h1>
                 </div>
 
                 <div>

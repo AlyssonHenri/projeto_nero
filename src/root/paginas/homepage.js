@@ -254,6 +254,7 @@ function Homepage() {
                               <Post
                                   key={post.id}
                                   id={post.id}
+                                  titulo={post.titulo}
                                   usuario={post.usuario}
                                   nome={post.titulo}
                                   status={post.status}

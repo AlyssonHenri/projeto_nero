@@ -62,7 +62,7 @@ function NavBar() {
                             <h1>Mapa Interativo</h1>
                         </div>
                         <div onClick={() => {navigate('/perfil')}} className='flex flex-col items-center justify-center'>
-                            <IoPersonCircle size={30}/>
+                            <img onError={handleImageError} onClick={() => navigate('/perfil')} src={imgPerfil} className='h-8 w-8 rounded-full object-cover' alt='foto_perfil'/>
                             <h1>Perfil</h1>
                         </div>
                     </div> 
