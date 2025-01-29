@@ -409,7 +409,23 @@ function Post({ id }){
                 </div>
                 <button
                     onClick={() => {
-                        navigate(`/post/${id}`)
+                        navigate(`/post/${id}`, {
+                            state: { 
+                                id, 
+                                titulo: postagem.titulo, 
+                                nome: postagem.nome, 
+                                usuario: postagem.usuario, 
+                                status: postagem.status, 
+                                imagem: postagem.imagem, 
+                                fotoPerfil, 
+                                nomePerfil, 
+                                data, 
+                                hora, 
+                                votos: postagem.votos, 
+                                descricao: postagem.descricao, 
+                                natureza: postagem.natureza 
+                            }
+                        })
                     }}
                     className='botao-estilo-3 px-3 h-8 mr-2'
                 >
