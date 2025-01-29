@@ -121,7 +121,6 @@ function Homepage() {
 
             if (response.ok) {
                 const data = await response.json()
-                console.log(data)
                 setPosts(data.reverse())
             } else {
                 console.error(`Erro ao carregar posts: ${response.status}`)
@@ -251,19 +250,19 @@ function Homepage() {
                               <SkeletonPost key={index} />
                           ))
                         : posts.map(post => (
-                              <Post
-                                  key={post.id}
-                                  id={post.id}
-                                  titulo={post.titulo}
-                                  usuario={post.usuario}
-                                  status={post.status}
-                                  imagem={post.imagem}
-                                  perfil={post.usuario}
-                                  criacao={post.criacao}
-                                  votos={post.votos}
-                                  descricao={post.descricao}
-                                  natureza={post.natureza}
-                              />
+                            <Post
+                                key={post.id}
+                                id={post.id}
+                                usuario={post.usuario}
+                                titulo={post.titulo}
+                                status={post.status}
+                                imagem={post.imagem}
+                                perfil={post.usuario}
+                                criacao={post.criacao}
+                                votos={post.votos}
+                                descricao={post.descricao}
+                                natureza={post.natureza}
+                            />
                           ))}
                 </div>
             </div>

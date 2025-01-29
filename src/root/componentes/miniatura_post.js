@@ -24,7 +24,6 @@ function Miniatura({ id, usuario, tipo, titulo, status, imagem, perfil, criacao,
     }
 
     const fetchPerfilData = async () => {
-        console.log(`https://api.nero.lat/api/usuario/${perfil}/`)
         try {
             const response = await fetch(`https://api.nero.lat/api/usuario/${perfil}/`, {
                 headers: {

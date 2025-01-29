@@ -12,17 +12,16 @@ const iconePersonalizado = () => {
         </svg>
     `
     return new L.Icon({
-        iconUrl: `data:image/svg+xmlbase64,${btoa(svgIcon)}`,
+        iconUrl: `data:image/svg+xml;utf8,${encodeURIComponent(svgIcon)}`,
         iconSize: [30, 30],
     })
 }
 
-function Editar({id, setShowEditarModal, showEditarModal, titulo, descricao, natureza}) {
+function Editar({ id, setShowEditarModal, showEditarModal, titulo, descricao, natureza, funcUpdate }) {
     const navigate = useNavigate()
     const [erroLocalizacao, setErroLocalizacao] = useState(null)
     const [pinPosition, setPinPosition] = useState(null)
     const [dadosImagem, setDadosImagem] = useState(null)
-    const [, setImagemModalVisivel] = useState(false)
     const [carregandoLocalizacao, setCarregandoLocalizacao] = useState(true)
     const mapRef = useRef(null)
     const [formData, setFormData] = useState({
@@ -33,6 +32,14 @@ function Editar({id, setShowEditarModal, showEditarModal, titulo, descricao, nat
     })
     const token = localStorage.getItem('token')
 
+    const handleImageChange = async (e) => {
+        const file = e.target.files && e.target.files[0]
+        if (file) {
+            setDadosImagem(file)
+            setFormData((prev) => ({ ...prev, imagem: file }))
+        }
+    }
+
     const handleEditarPostagem = async () => {
         try {
             const formDataEditar = new FormData()
@@ -40,7 +47,7 @@ function Editar({id, setShowEditarModal, showEditarModal, titulo, descricao, nat
             formDataEditar.append('descricao', formData.descricao)
             formDataEditar.append('natureza', formData.natureza)
             if (formData.imagem) {
-                formDataEditar.append('imagem', formData.imagem)
+                formDataEditar.append('imagem', dadosImagem)
             }
 
             const response = await fetch(`https://api.nero.lat/api/postagem/${id}/`, {
@@ -55,6 +62,7 @@ function Editar({id, setShowEditarModal, showEditarModal, titulo, descricao, nat
             if (response.ok) {
                 setShowEditarModal(false)
                 navigate('/home')
+                funcUpdate()
             } else {
                 console.error('Erro ao editar postagem:', await response.text())
             }
@@ -72,20 +80,6 @@ function Editar({id, setShowEditarModal, showEditarModal, titulo, descricao, nat
         })
 
         return pinPosition ? <Marker position={pinPosition} icon={iconePersonalizado()}></Marker> : null
-    }
-
-    const handleImageChange = async (e) => {
-        const file = e.target.files && e.target.files[0]
-        if (file) {
-          const reader = new FileReader()
-          reader.onloadend = () => {
-            setDadosImagem({
-              previsaoImagem: reader.result,
-              arquivoImagem: file,
-            })
-          }
-          reader.readAsDataURL(file)
-        }
     }
 
     useEffect(() => {
@@ -140,7 +134,7 @@ function Editar({id, setShowEditarModal, showEditarModal, titulo, descricao, nat
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: isBrowser ? '45%' : '95%',
+                    width: isBrowser ? '45%' : '95%'
                 }}
             >
                 <TextField
@@ -187,21 +181,12 @@ function Editar({id, setShowEditarModal, showEditarModal, titulo, descricao, nat
                         </button>
                         <label className="botao-estilo-2 text-center cursor-pointer">
                             Adicionar Imagem
-                            {dadosImagem ? 
-                                <button
-                                    type="file"
-                                    accept="image/*"
-                                    className="hidden"
-                                    onClick={() => setImagemModalVisivel(true)}
-                                /> 
-                            :
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    className="hidden"
-                                    onChange={handleImageChange}
-                                />
-                            }
+                            <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={handleImageChange}
+                            />
                         </label>
                     </div>
                     {carregandoLocalizacao ? (
@@ -212,7 +197,7 @@ function Editar({id, setShowEditarModal, showEditarModal, titulo, descricao, nat
                         <MapContainer
                             center={formData.geolocalizacao || [-23.55052, -46.633308]}
                             zoom={13}
-                            style={{ height: isBrowser ? "41vh" : "200px", width: isBrowser ? "41vw" : "100%" }}
+                            style={{ height: isBrowser ? "38vh" : "200px", width: isBrowser ? "41vw" : "100%" }}
                             whenCreated={(mapInstance) => {
                                 mapRef.current = mapInstance;
                             }}
