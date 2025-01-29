@@ -3,9 +3,10 @@ import { isBrowser } from 'react-device-detect'
 import { PiSirenDuotone } from 'react-icons/pi'
 import { useNavigate } from 'react-router-dom'
 import Comentario from './comentario'
+import Editar from './editar'
 import { Box, CircularProgress, Modal, TextField } from '@mui/material'
 
-function Post({ id, titulo, usuario, nome, status, imagem, perfil, criacao, votos, descricao, natureza }) {
+function Post({ id }){
     const token = localStorage.getItem('token')
     const user_id = localStorage.getItem('id')
     const tipo = localStorage.getItem('tipo')
@@ -14,20 +15,41 @@ function Post({ id, titulo, usuario, nome, status, imagem, perfil, criacao, voto
     const [avaliacao, setAvaliacao] = useState(0)
     const [showComentarioModal, setShowComentarioModal] = useState(false)
     const [showAvaliacaoModal, setShowAvaliacaoModal] = useState(false)
+    const [showEditarModal, setShowEditarModal] = useState(false)
     const [loadingF, setLoadingF] = useState(false)
     const [loadingR, setLoadingR] = useState(false)
     const [perfilData, setPerfilData] = useState(null)
     const [comentarios, setComentarios] = useState([])
+    const [postagem, setPostagem] = useState(null)
     const statusInfo = {
-        pendente: { emoji: '🔴', texto: 'Pendente' },
-        resolvido: { emoji: '🟢', texto: 'Resolvido' }
+        1: { emoji: '🔴', texto: 'Pendente' },
+        2: { emoji: '🟢', texto: 'Resolvido' },
+        3: { emoji: '⚠️', texto: 'Falsa' },
     }
 
-    const { emoji, texto } = statusInfo[status?.toLowerCase()] || statusInfo.pendente
+    const fetchPostagem = async () => {
+        try {
+            const response = await fetch(`https://api.nero.lat/api/postagem/${id}/`, {
+                headers: {
+                    'accept': 'application/json',
+                    'Authorization': `Token ${token}`,
+                }
+            })
+            
+            if (!response.ok) {
+                throw new Error(`Erro HTTP: ${response.status}`)
+            }
+            const data = await response.json()
+            setPostagem(data)
+        } catch (error) {
+            console.error('Erro ao buscar os dados da postagem:', error)
+        }
+    }
 
     const fetchPerfilData = async () => {
+        
         try {
-            const response = await fetch(`https://api.nero.lat/api/usuario/${perfil}/`, {
+            const response = await fetch(`https://api.nero.lat/api/usuario/${postagem?.usuario}/`, {
                 headers: {
                     'accept': 'application/json',
                     'Authorization': `Token ${token}`,
@@ -38,27 +60,6 @@ function Post({ id, titulo, usuario, nome, status, imagem, perfil, criacao, voto
         } catch (error) {
             console.error('Erro ao buscar os dados do perfil:', error)
         }
-    }
-
-    useEffect(() => {
-        fetchComentarios()
-        fetchPerfilData()
-    }, [])
-
-    const dataCriacao = new Date(criacao)
-    const data = dataCriacao.toLocaleDateString()
-    const hora = dataCriacao.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-
-    const modalStyle = {
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 400,
-        bgcolor: 'background.paper',
-        boxShadow: 24,
-        p: 4,
-        borderRadius: 2,
     }
 
     const fetchComentarios = async () => {
@@ -74,6 +75,38 @@ function Post({ id, titulo, usuario, nome, status, imagem, perfil, criacao, voto
         } catch (error) {
             console.error('Erro ao buscar os comentários:', error)
         }
+    }
+
+    useEffect(() => {
+        const fetchData = async () => {
+            await fetchPostagem()   
+        }
+        fetchData()
+    }, [id])
+    
+    useEffect(() => {
+        if (postagem?.usuario) {
+            fetchPerfilData()
+            fetchComentarios()
+        }
+    }, [postagem])
+    
+
+    const dataCriacao = new Date(postagem?.criacao)
+    const data = dataCriacao.toLocaleDateString()
+    const hora = dataCriacao.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    const { emoji, texto } = statusInfo[postagem?.status] || statusInfo[1]
+
+    const modalStyle = {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 400,
+        bgcolor: 'background.paper',
+        boxShadow: 24,
+        p: 4,
+        borderRadius: 2,
     }
 
     const enviarComentario = async () => {
@@ -154,7 +187,7 @@ function Post({ id, titulo, usuario, nome, status, imagem, perfil, criacao, voto
         }
     }
 
-    const renderAlertas = (votos) => {
+    const renderAlertas = (votos = 0) => {
         const max = 5
         const cheias = Math.min(parseInt(votos, 10), max)
         const vazias = max - cheias
@@ -177,8 +210,8 @@ function Post({ id, titulo, usuario, nome, status, imagem, perfil, criacao, voto
 
     const fotoPerfil = perfilData?.foto_perfil ? `https://api.nero.lat/${perfilData.foto_perfil}` : '/images/sem-foto.png'
     const nomePerfil = perfilData?.first_name || 'Anônimo'
-    const isCurrentUser = parseInt(usuario) === parseInt(user_id)
-    const isTipoOuvidoria = () => tipo === "ouvidoria"
+    const isCurrentUser = parseInt(postagem?.usuario) === parseInt(user_id)
+    const isTipoOuvidoria = tipo === "ouvidoria"
 
     if(isBrowser){
         return (
@@ -202,8 +235,8 @@ function Post({ id, titulo, usuario, nome, status, imagem, perfil, criacao, voto
                     </div>
                     <div className={`w-full h-full`}>
                         <img 
-                            alt={`Imagem de ${nome}`} 
-                            src={imagem ? `https://api.nero.lat/${imagem}` : '/images/sem-imagem.png'}
+                            alt={`Imagem de ${nomePerfil}`} 
+                            src={postagem?.imagem ? `https://api.nero.lat/${postagem?.imagem}` : '/images/sem-imagem.png'}
                             className='w-full h-full object-cover' 
                         />
                     </div>
@@ -216,16 +249,16 @@ function Post({ id, titulo, usuario, nome, status, imagem, perfil, criacao, voto
                                 <h1>{emoji}</h1>
                                 <div className='flex flex-col'>
                                     <h1 className='ml-1'>{texto}</h1>
-                                    <h1 className='text-sm font-normal ml-1 truncate'>{nome}</h1>
+                                    <h1 className='text-sm font-normal ml-1 truncate'>{postagem?.titulo}</h1>
                                 </div>
                             </div>
                         </div>
-                        <div className='flex'>{renderAlertas(votos)}</div>
+                        <div className='flex'>{renderAlertas(postagem?.votos)}</div>
                     </div>
 
                     <div className='flex flex-col mt-3'>
                         <h1 className='font-semibold'>Descricao</h1>
-                        <h1>{descricao}</h1>
+                        <h1>{postagem?.descricao}</h1>
                     </div>
 
                     {comentarios.length > 0 && <h1 className='font-semibold mt-3'>Comentários</h1>}
@@ -239,9 +272,9 @@ function Post({ id, titulo, usuario, nome, status, imagem, perfil, criacao, voto
                             </div>
                         ))}
                     </div>
-                    { !isCurrentUser && (
-                        !isTipoOuvidoria() ? (
-                            <div className='flex gap-2 mt-4 '>
+                    {!isCurrentUser && (
+                        !isTipoOuvidoria ? (
+                            <div className='flex gap-2 mt-4 mb-[100px]'>
                                 <button className='botao-estilo-1' onClick={() => setShowComentarioModal(true)}>
                                     Comentar
                                 </button>
@@ -250,18 +283,25 @@ function Post({ id, titulo, usuario, nome, status, imagem, perfil, criacao, voto
                                 </button>
                             </div>
                         ) : (
-                            <div className='flex gap-2 mt-4 '>
+                            <div className='flex gap-2 mt-4 mb-[100px]'>
                                 <button className='botao-estilo-1' onClick={() => setShowComentarioModal(true)}>
                                     Comentar
                                 </button>
-                                <button disabled={loadingR} className='botao-estilo-1' onClick={() => { setLoadingF(true); alterarStatusReclama(3); }}>
-                                    {loadingF ? <CircularProgress sx={{mb: -0.5}} size={20} color="inherit"/> : 'Reportar'}
+                                <button disabled={loadingR} className='botao-estilo-1' onClick={() => { setLoadingF(true); alterarStatusReclama(3) }}>
+                                    {loadingF ? <CircularProgress sx={{ mb: -0.5 }} size={20} color="inherit" /> : 'Reportar'}
                                 </button>
-                                <button disabled={loadingF} className='botao-estilo-2' onClick={() => { setLoadingR(true); alterarStatusReclama(2); }}>
-                                    {loadingR ? <CircularProgress sx={{mb: -0.5}} size={20} color="inherit"/> : 'Resolver'}
+                                <button disabled={loadingF} className='botao-estilo-2' onClick={() => { setLoadingR(true); alterarStatusReclama(2) }}>
+                                    {loadingR ? <CircularProgress sx={{ mb: -0.5 }} size={20} color="inherit" /> : 'Resolver'}
                                 </button>
                             </div>
                         )
+                    )}
+                    {isCurrentUser && (
+                        <div className='flex gap-2 mt-4 mb-[100px]'>
+                            <button className='botao-estilo-1' onClick={() => setShowEditarModal(true)}>
+                                Editar
+                            </button>
+                        </div>
                     )}
                 </div>
                 <Modal open={showComentarioModal} onClose={() => setShowComentarioModal(false)}>
@@ -319,6 +359,15 @@ function Post({ id, titulo, usuario, nome, status, imagem, perfil, criacao, voto
                         </div>
                     </Box>
                 </Modal>
+
+                <Editar
+                    id={postagem?.id}
+                    setShowEditarModal={setShowEditarModal}
+                    showEditarModal={showEditarModal}
+                    titulo={postagem?.titulo}
+                    descricao={postagem?.descricao}
+                    natureza={postagem?.natureza}
+                />
             </div>
         )
     }
@@ -340,19 +389,19 @@ function Post({ id, titulo, usuario, nome, status, imagem, perfil, criacao, voto
                     </div>
                 </div>
                 <div className='flex flex-col justify-center items-center'>
-                    <div className='flex'>{renderAlertas(votos)}</div>
+                    <div className='flex'>{renderAlertas(postagem?.votos)}</div>
                 </div>
             </div>
             <div className={`w-full h-full`}>
                 <img 
-                    alt={`Imagem de ${nome}`} 
-                    src={imagem ? `https://api.nero.lat/${imagem}` : '/images/sem-imagem.png'}
+                    alt={`Imagem de ${nomePerfil}`} 
+                    src={postagem?.imagem ? `https://api.nero.lat/${postagem?.imagem}` : '/images/sem-imagem.png'}
                     className='w-full h-full object-cover' 
                 />
             </div>
             <div className='flex justify-between items-center rounded-b-lg bg-white p-1'>
                 <div className='px-3 flex flex-col font-semibold '>
-                    <h1 className='text-sm mt-1 truncate'>{nome}</h1>
+                    <h1 className='text-sm mt-1 truncate'>{postagem?.titulo}</h1>
                     <div className='flex items-center mb-1'>
                         <h1>{emoji}</h1>
                         <h1 className='ml-1'>{texto}</h1>
@@ -360,9 +409,7 @@ function Post({ id, titulo, usuario, nome, status, imagem, perfil, criacao, voto
                 </div>
                 <button
                     onClick={() => {
-                        navigate(`/post/${id}`, {
-                            state: { id, titulo, nome, usuario, status, imagem, fotoPerfil, nomePerfil, data, hora, votos, descricao, natureza }
-                        })
+                        navigate(`/post/${id}`)
                     }}
                     className='botao-estilo-3 px-3 h-8 mr-2'
                 >

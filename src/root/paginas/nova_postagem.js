@@ -111,24 +111,25 @@ function NovoPost() {
         return pinPosition ? <Marker position={pinPosition} icon={iconePersonalizado()}></Marker> : null
     }
 
-    const handleSubmit = async (isAnonymous = false) => {
+    const handleSubmit = async (anonima) => {
         if (!formData.titulo || !formData.descricao || !formData.natureza) {
             alert("Por favor, preencha todos os campos obrigatórios.")
             return
         }
     
-        const formDataToSend = new FormData()
-        formDataToSend.append('titulo', formData.titulo)
-        formDataToSend.append('descricao', formData.descricao)
-        formDataToSend.append('natureza', formData.natureza)
+        const formPostagem = new FormData()
+        formPostagem.append('titulo', formData.titulo)
+        formPostagem.append('descricao', formData.descricao)
+        formPostagem.append('natureza', formData.natureza)
+        formPostagem.append('anonima', anonima)
     
         if (dadosImagem?.arquivoImagem) {
-            formDataToSend.append("imagem", dadosImagem.arquivoImagem)
+            formPostagem.append("imagem", dadosImagem.arquivoImagem)
         }
         
         if (formData.geolocalizacao) {
             const { lat, lng } = formData.geolocalizacao
-            formDataToSend.append('geolocalizacao', `${lat},${lng}`)
+            formPostagem.append('geolocalizacao', `${lat},${lng}`)
         }
     
         try {    
@@ -138,7 +139,7 @@ function NovoPost() {
                     'accept': 'application/json',
                     'Authorization': `Token ${token}`,
                 },
-                body: formDataToSend,
+                body: formPostagem,
             })
     
             if (response.ok) {
@@ -269,17 +270,15 @@ function NovoPost() {
 
                 <div className={`${isBrowser? 'flex gap-2 w-full items-center justify-center' : 'flex-col'}`}>
                     <div className={`flex flex-col gap-2 mt-4 ${isBrowser ? 'w-72' : 'w-full'}`}>
-                        <button className={`botao-estilo-2 ${isBrowser ? 'mb-20' : ''}`} onClick={handleSubmit}>
+                        <button className={`botao-estilo-2 ${isBrowser ? 'mb-20' : ''}`} onClick={() => handleSubmit(false)}>
                             Postar
                         </button>
                     </div>
-                    {false &&
-                        <div className={`flex flex-col gap-2 mt-4 ${isBrowser ? 'w-72' : 'w-full'}`}>
-                            <button className="botao-estilo-4 mb-20" onClick={handleSubmit}>
-                                😶 Anônimo
-                            </button>
-                        </div>
-                    }
+                    <div className={`flex flex-col gap-2 mt-4 ${isBrowser ? 'w-72' : 'w-full'}`}>
+                        <button className="botao-estilo-4 mb-20" onClick={() => handleSubmit(true)}>
+                            😶 Anônimo
+                        </button>
+                    </div>
                 </div>
             </div>
 

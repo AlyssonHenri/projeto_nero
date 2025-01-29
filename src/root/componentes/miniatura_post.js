@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { isBrowser } from 'react-device-detect'
 import { useNavigate } from 'react-router-dom'
 
-function Miniatura({ id, usuario, tipo, nome, status, imagem, perfil, criacao, votos, descricao, natureza }) {
+function Miniatura({ id, usuario, tipo, titulo, status, imagem, perfil, criacao, votos, descricao, natureza }) {
     const token = localStorage.getItem('token')
     const navigate = useNavigate()
     const [perfilData, setPerfilData] = useState(null)
@@ -24,6 +24,7 @@ function Miniatura({ id, usuario, tipo, nome, status, imagem, perfil, criacao, v
     }
 
     const fetchPerfilData = async () => {
+        console.log(`https://api.nero.lat/api/usuario/${perfil}/`)
         try {
             const response = await fetch(`https://api.nero.lat/api/usuario/${perfil}/`, {
                 headers: {
@@ -67,7 +68,7 @@ function Miniatura({ id, usuario, tipo, nome, status, imagem, perfil, criacao, v
             <div className='relative shadow flex flex-col min-w-[24%] max-w-[24%] h-96'>
                 <div className={`relative w-full h-full`}>
                     <img
-                        alt={`Imagem de ${nome}`}
+                        alt={`Imagem de ${usuario}`}
                         src={imagem ? `https://api.nero.lat/${imagem}` : '/images/sem-imagem.png'}
                         className='w-full h-[350px] object-cover rounded-t-lg rounded-ss-xl overflow-hidden'
                     />
@@ -76,7 +77,7 @@ function Miniatura({ id, usuario, tipo, nome, status, imagem, perfil, criacao, v
                     </h1>
                 </div>
                 <div className='bg-white absolute bottom-0 w-full px-3 flex flex-col font-semibold rounded-b-lg'>
-                    <h1 className='text-sm mt-1 truncate'>{nome}</h1>
+                    <h1 className='text-sm mt-1 truncate'>{titulo}</h1>
                     <div className='flex items-center mb-1'>
                         <h1>{emoji}</h1>
                         <h1 className='ml-1'>{texto}</h1>
@@ -84,10 +85,10 @@ function Miniatura({ id, usuario, tipo, nome, status, imagem, perfil, criacao, v
                 </div>
             </div>
         ) : (
-            <div onClick={() => { navigate(`/post/${id}`, { state: { id, nome, usuario, status, imagem, fotoPerfil, nomePerfil, data, hora, votos, descricao, natureza }}) }} className='relative flex flex-col min-w-[48%] max-w-[48%] h-48'>
+            <div onClick={() => { navigate(`/post/${id}`, { state: { id, titulo, usuario, status, imagem, fotoPerfil, nomePerfil, data, hora, votos, descricao, natureza }}) }} className='relative flex flex-col min-w-[48%] max-w-[48%] h-48'>
                 <div className={`relative w-full h-full`}>
                     <img
-                        alt={`Imagem de ${nome}`}
+                        alt={`Imagem de ${usuario}`}
                         src={imagem ? `https://api.nero.lat/${imagem}` : '/images/sem-imagem.png'}
                         className='w-full h-[150px] object-cover rounded-t-lg rounded-ss-xl overflow-hidden'
                     />
@@ -96,7 +97,7 @@ function Miniatura({ id, usuario, tipo, nome, status, imagem, perfil, criacao, v
                     </h1>
                 </div>
                 <div className='bg-white absolute bottom-0 w-full px-3 flex flex-col font-semibold rounded-b-lg'>
-                    <h1 className='text-sm mt-1 truncate'>{nome}</h1>
+                    <h1 className='text-sm mt-1 truncate'>{titulo}</h1>
                     <div className='flex items-center mb-1'>
                         <h1>{emoji}</h1>
                         <h1 className='ml-1'>{texto}</h1>

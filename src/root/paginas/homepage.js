@@ -121,6 +121,7 @@ function Homepage() {
 
             if (response.ok) {
                 const data = await response.json()
+                console.log(data)
                 setPosts(data.reverse())
             } else {
                 console.error(`Erro ao carregar posts: ${response.status}`)
@@ -166,12 +167,11 @@ function Homepage() {
                                         ? Array.from({ length: 2 }).map((_, index) => (
                                             <SkeletonMiniatura key={index} />
                                         ))
-                                        : miniaturas.map((miniatura, index) => (
+                                        : miniaturas.filter(miniatura => miniatura.usuario !== null).map((miniatura, index) => (
                                             <Miniatura
                                                 key={index}
                                                 id={miniatura.id}
-                                                usuario={miniatura.usuario}
-                                                nome={miniatura.titulo}
+                                                titulo={miniatura.titulo}
                                                 status={miniatura.status}
                                                 imagem={miniatura.imagem}
                                                 tipo={miniatura.natureza}
@@ -193,7 +193,7 @@ function Homepage() {
                                             key={post.id}
                                             id={post.id}
                                             usuario={post.usuario}
-                                            nome={post.titulo}
+                                            titulo={post.titulo}
                                             status={post.status}
                                             imagem={post.imagem}
                                             perfil={post.usuario}
@@ -224,12 +224,12 @@ function Homepage() {
                             ? Array.from({ length: 2 }).map((_, index) => (
                                 <SkeletonMiniatura key={index} />
                             ))
-                            : miniaturas.map((miniatura, index) => (
+                            : miniaturas.filter(miniatura => miniatura.usuario !== null).map((miniatura, index) => (
                                 <Miniatura
                                     key={index}
                                     id={miniatura.id}
                                     usuario={miniatura.usuario}
-                                    nome={miniatura.titulo}
+                                    titulo={miniatura.titulo}
                                     status={miniatura.status}
                                     imagem={miniatura.imagem}
                                     tipo={miniatura.natureza}
@@ -256,7 +256,6 @@ function Homepage() {
                                   id={post.id}
                                   titulo={post.titulo}
                                   usuario={post.usuario}
-                                  nome={post.titulo}
                                   status={post.status}
                                   imagem={post.imagem}
                                   perfil={post.usuario}
