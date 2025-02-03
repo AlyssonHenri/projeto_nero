@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { isBrowser } from 'react-device-detect'
 import { useNavigate } from 'react-router-dom'
 
-function Miniatura({ id, usuario, tipo, titulo, status, imagem, perfil, criacao, votos, descricao, natureza }) {
+function Miniatura({ id, usuario, tipo, titulo, status, imagem, perfil, criacao, votos, descricao, natureza, handleMiniaturaClick }) {
     const token = localStorage.getItem('token')
     const navigate = useNavigate()
     const [perfilData, setPerfilData] = useState(null)
@@ -53,7 +53,7 @@ function Miniatura({ id, usuario, tipo, titulo, status, imagem, perfil, criacao,
     const statusInfo = {
         1: { emoji: '🔴', texto: 'Pendente' },
         2: { emoji: '🟢', texto: 'Resolvido' },
-        3: { emoji: '⚠️', texto: 'Cancelada' } // Adicionando o status "Cancelada"
+        3: { emoji: '⚠️', texto: 'Cancelada' }
     }
 
     // Acessa diretamente statusInfo[status] e usa statusInfo[1] como fallback
@@ -65,7 +65,7 @@ function Miniatura({ id, usuario, tipo, titulo, status, imagem, perfil, criacao,
     return (
        <>
          {isBrowser ? (
-            <div className='relative shadow flex flex-col min-w-[24%] max-w-[24%] h-96'>
+            <div onClick={() => handleMiniaturaClick(id)} className='relative shadow flex flex-col cursor-pointer min-w-[24%] max-w-[24%] h-96'>
                 <div className={`relative w-full h-full`}>
                     <img
                         alt={`Imagem de ${usuario}`}

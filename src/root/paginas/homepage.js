@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { isBrowser } from 'react-device-detect'
 import Miniatura from '../componentes/miniatura_post'
 import Post from '../componentes/post'
@@ -58,6 +58,7 @@ function Homepage() {
     const [posts, setPosts] = useState([])
     const [loadingMiniaturas, setLoadingMiniaturas] = useState(true)
     const [loadingPosts, setLoadingPosts] = useState(true)
+    const postRefs = useRef({})
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -121,7 +122,6 @@ function Homepage() {
 
             if (response.ok) {
                 const data = await response.json()
-                console.log(data)
                 setPosts(data.reverse())
             } else {
                 console.error(`Erro ao carregar posts: ${response.status}`)
@@ -137,13 +137,22 @@ function Homepage() {
         event.target.src = '/images/sem-imagem.png'
     }
 
+    const handleMiniaturaClick = (postId) => {
+        console.log(postId)
+        if (postRefs.current[postId]) {
+            const element = postRefs.current[postId];
+            const offset = element.getBoundingClientRect().top + window.scrollY - window.innerHeight / 2 + element.clientHeight / 2;
+            window.scrollTo({ top: offset, behavior: 'smooth' });
+        }
+    }
+
     if (isBrowser) {
         return (
             <div className='relative h-full min-h-screen w-screen '>
                 <div className='flex flex-col'>
+                    <NavBar imgPerfil={perfil?.foto_perfil}/>
                     { tipo === "cidadão" &&
                         <>
-                            <NavBar imgPerfil={perfil?.foto_perfil}/>
                             <div className='flex items-center justify-between px-[10%] mt-6 mb-6'>
                                 <div className='flex items-center justify-between'>
                                     <img 
@@ -170,6 +179,7 @@ function Homepage() {
                                         : miniaturas.filter(miniatura => miniatura.usuario !== null).map((miniatura, index) => (
                                             <Miniatura
                                                 key={index}
+                                                index={index}
                                                 id={miniatura.id}
                                                 titulo={miniatura.titulo}
                                                 status={miniatura.status}
@@ -180,33 +190,35 @@ function Homepage() {
                                                 votos={miniatura.votos}
                                                 descricao={miniatura.descricao}
                                                 natureza={miniatura.natureza}
+                                                handleMiniaturaClick={handleMiniaturaClick}
                                             />
                                         ))}
                                 </div>
                             </div>
                             <Divider />
-                            <Box className='px-[10%] max-w-screen mt-8'>
-                                <h1 className='font-semibold text-3xl mb-3'>Feed de Postagens</h1>
-                                <div className='flex flex-col  gap-10 pb-3 mb-16'>
-                                    { posts.map(post => (
-                                        <Post
-                                            key={post.id}
-                                            id={post.id}
-                                            usuario={post.usuario}
-                                            titulo={post.titulo}
-                                            status={post.status}
-                                            imagem={post.imagem}
-                                            perfil={post.usuario}
-                                            criacao={post.criacao}
-                                            votos={post.votos}
-                                            descricao={post.descricao}
-                                            natureza={post.natureza}
-                                        />
-                                    ))}
-                                </div>
-                            </Box>
                         </>
                     }
+                    <Box className='px-[10%] max-w-screen mt-8'>
+                        <h1 className='font-semibold text-3xl mb-3'>Feed de Postagens</h1>
+                        <div className='flex flex-col  gap-10 pb-3 mb-16'>
+                            { posts.map((post, index) => (
+                                <Post
+                                    key={index}
+                                    id={post.id}
+                                    ref={el => postRefs.current[post.id] = el}
+                                    usuario={post.usuario}
+                                    titulo={post.titulo}
+                                    status={post.status}
+                                    imagem={post.imagem}
+                                    perfil={post.usuario}
+                                    criacao={post.criacao}
+                                    votos={post.votos}
+                                    descricao={post.descricao}
+                                    natureza={post.natureza}
+                                />
+                            ))}
+                        </div>
+                    </Box>
                 </div>
             </div>
         )
@@ -238,6 +250,7 @@ function Homepage() {
                                     votos={miniatura.votos}
                                     descricao={miniatura.descricao}
                                     natureza={miniatura.natureza}
+                                    onClick={() => handleMiniaturaClick(miniatura.id)}
                                 />
                             ))}
                     </div>
@@ -263,6 +276,7 @@ function Homepage() {
                                   votos={post.votos}
                                   descricao={post.descricao}
                                   natureza={post.natureza}
+                                  ref={el => postRefs.current[post.id] = el}
                               />
                           ))}
                 </div>

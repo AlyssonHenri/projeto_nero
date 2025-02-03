@@ -6,7 +6,7 @@ import Comentario from './comentario'
 import Editar from './editar'
 import { Box, CircularProgress, Modal, TextField } from '@mui/material'
 
-function Post({ id }){
+const Post = React.forwardRef(({ id }, ref) => {
     const token = localStorage.getItem('token')
     const user_id = localStorage.getItem('id')
     const tipo = localStorage.getItem('tipo')
@@ -47,7 +47,6 @@ function Post({ id }){
     }
 
     const fetchPerfilData = async () => {
-        
         try {
             const response = await fetch(`https://api.nero.lat/api/usuario/${postagem?.usuario}/`, {
                 headers: {
@@ -183,7 +182,7 @@ function Post({ id }){
         } finally {
             setLoadingR(false)
             setLoadingF(false)
-            navigate('/home')
+            window.location.reload()
         }
     }
 
@@ -213,9 +212,9 @@ function Post({ id }){
     const isCurrentUser = parseInt(postagem?.usuario) === parseInt(user_id)
     const isTipoOuvidoria = tipo === "ouvidoria"
 
-    if(isBrowser){
+    if (isBrowser) {
         return (
-            <div className='flex bg-white rounded-lg h-[500px] overflow-hidden shadow-md'>
+            <div ref={ref} className='flex bg-white rounded-lg h-[500px] overflow-hidden shadow-md'>
                 <div className='w-[60%]'>
                     <div className='flex justify-between bg-white rounded-t-lg p-3'>
                         <div className='flex gap-2'>
@@ -287,10 +286,10 @@ function Post({ id }){
                                 <button className='botao-estilo-1' onClick={() => setShowComentarioModal(true)}>
                                     Comentar
                                 </button>
-                                <button disabled={loadingR} className='botao-estilo-1' onClick={() => { setLoadingF(true); alterarStatusReclama(3) }}>
+                                <button disabled={loadingR} className='botao-estilo-1' onClick={() => { setLoadingF(true); alterarStatusReclama(3); }}>
                                     {loadingF ? <CircularProgress sx={{ mb: -0.5 }} size={20} color="inherit" /> : 'Reportar'}
                                 </button>
-                                <button disabled={loadingF} className='botao-estilo-2' onClick={() => { setLoadingR(true); alterarStatusReclama(2) }}>
+                                <button disabled={loadingF} className='botao-estilo-2' onClick={() => { setLoadingR(true); alterarStatusReclama(2); }}>
                                     {loadingR ? <CircularProgress sx={{ mb: -0.5 }} size={20} color="inherit" /> : 'Resolver'}
                                 </button>
                             </div>
@@ -373,7 +372,7 @@ function Post({ id }){
     }
     
     return (
-        <div className='flex flex-col w-full max-w-[400px]  bg-white rounded-lg overflow-hidden shadow-md'>
+        <div className='flex flex-col w-full max-w-[400px] bg-white rounded-lg overflow-hidden shadow-md'>
             <div className='flex justify-between bg-white rounded-t-lg p-3'>
                 <div className='flex gap-2'>
                     <img 
@@ -434,6 +433,6 @@ function Post({ id }){
             </div>
         </div>
     )
-}
+})
 
 export default Post
