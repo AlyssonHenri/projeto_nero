@@ -89,12 +89,6 @@ const Post = React.forwardRef(({ id }, ref) => {
             fetchComentarios()
         }
     }, [postagem])
-    
-
-    const dataCriacao = new Date(postagem?.criacao)
-    const data = dataCriacao.toLocaleDateString()
-    const hora = dataCriacao.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    const { emoji, texto } = statusInfo[postagem?.status] || statusInfo[1]
 
     const modalStyle = {
         position: 'absolute',
@@ -207,6 +201,10 @@ const Post = React.forwardRef(({ id }, ref) => {
         )
     }
 
+    const dataCriacao = new Date(postagem?.criacao)
+    const data = dataCriacao.toLocaleDateString()
+    const hora = dataCriacao.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    const { emoji, texto } = statusInfo[postagem?.status] || statusInfo[1]
     const fotoPerfil = perfilData?.foto_perfil ? `https://api.nero.lat/${perfilData.foto_perfil}` : '/images/sem-foto.png'
     const nomePerfil = perfilData?.first_name || 'Anônimo'
     const isCurrentUser = parseInt(postagem?.usuario) === parseInt(user_id)
@@ -297,6 +295,9 @@ const Post = React.forwardRef(({ id }, ref) => {
                     )}
                     {isCurrentUser && (
                         <div className='flex gap-2 mt-4 mb-[100px]'>
+                            <button className='botao-estilo-1' onClick={() => setShowComentarioModal(true)}>
+                                Comentar
+                            </button>
                             <button className='botao-estilo-1' onClick={() => setShowEditarModal(true)}>
                                 Editar
                             </button>
@@ -359,14 +360,17 @@ const Post = React.forwardRef(({ id }, ref) => {
                     </Box>
                 </Modal>
 
-                <Editar
-                    id={postagem?.id}
-                    setShowEditarModal={setShowEditarModal}
-                    showEditarModal={showEditarModal}
-                    titulo={postagem?.titulo}
-                    descricao={postagem?.descricao}
-                    natureza={postagem?.natureza}
-                />
+                {postagem && 
+                    <Editar
+                        id={postagem?.id}
+                        setShowEditarModal={setShowEditarModal}
+                        showEditarModal={showEditarModal}
+                        titulo={postagem?.titulo}
+                        descricao={postagem?.descricao}
+                        natureza={postagem?.natureza}
+                        funcUpdate={fetchPostagem}
+                    />
+                }
             </div>
         )
     }

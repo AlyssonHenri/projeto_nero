@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import NavBar from '../componentes/nav_bar'
 import Comentario from '../componentes/comentario'
 import Editar from '../componentes/editar'
@@ -9,7 +9,7 @@ import { Modal, Box, TextField, CircularProgress } from '@mui/material'
 
 function Detalhes() {
     const navigate = useNavigate()
-    const { state } = useLocation()
+    const { id } = useParams()
     const [comentarios, setComentarios] = useState([])
     const [showComentarioModal, setShowComentarioModal] = useState(false)
     const [showAvaliacaoModal, setShowAvaliacaoModal] = useState(false)
@@ -18,14 +18,34 @@ function Detalhes() {
     const [avaliacao, setAvaliacao] = useState(0)
     const [loadingF, setLoadingF] = useState(false)
     const [loadingR, setLoadingR] = useState(false)
-
+    const [postagem, setPostagem] = useState(null)
+    const [perfilData, setPerfilData] = useState(null)
     const token = localStorage.getItem('token')
-    const id = localStorage.getItem('id')
+    const id_user = localStorage.getItem('id')
     const tipo = localStorage.getItem('tipo')
+
+    const fetchPostagem = async () => {
+        try {
+            const response = await fetch(`https://api.nero.lat/api/postagem/${id}/`, {
+                headers: {
+                    'accept': 'application/json',
+                    'Authorization': `Token ${token}`,
+                }
+            })
+            
+            if (!response.ok) {
+                throw new Error(`Erro HTTP: ${response.status}`)
+            }
+            const data = await response.json()
+            setPostagem(data)
+        } catch (error) {
+            console.error('Erro ao buscar os dados da postagem:', error)
+        }
+    }
 
     const fetchComentarios = async () => {
         try {
-            const response = await fetch(`https://api.nero.lat/api/postagem/${state.id}/comentarios/`, {
+            const response = await fetch(`https://api.nero.lat/api/postagem/${id}/comentarios/`, {
                 headers: {
                     accept: 'application/json',
                     Authorization: `Token ${token}`,
@@ -42,7 +62,7 @@ function Detalhes() {
         try {
             const formData = new FormData()
             formData.append('texto', novoComentario)
-            formData.append('postagem', state.id)
+            formData.append('postagem', id)
 
             const response = await fetch(`https://api.nero.lat/api/postagem/comentario/`, {
                 method: 'POST',
@@ -64,12 +84,27 @@ function Detalhes() {
         }
     }
 
+    const fetchPerfilData = async () => {
+        try {
+            const response = await fetch(`https://api.nero.lat/api/usuario/${postagem?.usuario}/`, {
+                headers: {
+                    'accept': 'application/json',
+                    'Authorization': `Token ${token}`,
+                }
+            })
+            const data = await response.json()
+            setPerfilData(data)
+        } catch (error) {
+            console.error('Erro ao buscar os dados do perfil:', error)
+        }
+    }
+
     const enviarAvaliacao = async () => {
         try {
             const formData = new FormData()
             formData.append('avaliacao', avaliacao)
 
-            const response = await fetch(`https://api.nero.lat/api/postagem/${state.id}/avaliar/`, {
+            const response = await fetch(`https://api.nero.lat/api/postagem/${id}/avaliar/`, {
                 method: 'POST',
                 headers: {
                     accept: 'application/json',
@@ -93,7 +128,7 @@ function Detalhes() {
             const formData = new FormData()
             formData.append('novo_status', status)
 
-            const response = await fetch(`https://api.nero.lat/api/postagem/${state.id}/atualizar-status/`, {
+            const response = await fetch(`https://api.nero.lat/api/postagem/${id}/atualizar-status/`, {
                 method: 'PATCH',
                 headers: {
                     accept: 'application/json',
@@ -117,39 +152,23 @@ function Detalhes() {
     }
 
     useEffect(() => {
-        if (state?.id) {
+        const fetchData = async () => {
+            await fetchPostagem()   
+        }
+        fetchData()
+    }, [id])
+    
+    useEffect(() => {
+        if (postagem?.usuario) {
+            fetchPerfilData()
             fetchComentarios()
         }
-    }, [state])
-
-    useEffect(() => {
-        if (state?.id) {
-            fetchComentarios();
-        }
-    }, [state]);
-
-    if (!state) {
-        return <div>Dados não encontrados</div>
-    }
-
-    const {
-        nome,
-        status,
-        usuario,
-        imagem,
-        fotoPerfil,
-        nomePerfil,
-        data,
-        hora,
-        votos,
-        descricao,
-        natureza,
-    } = state
+    }, [postagem])
 
     const statusMap = {
         "1": "pendente",
         "2": "resolvido",
-        "3": "falso",
+        "3": "falso",id_user
     }
 
     const naturezaMap = {
@@ -161,8 +180,8 @@ function Detalhes() {
         "6": "outro",
     }
 
-    const statusConvertido = statusMap[status] || "não especificado"
-    const naturezaConvertida = naturezaMap[natureza] || "não especificado"
+    const statusConvertido = statusMap[postagem?.status] || "não especificado"
+    const naturezaConvertida = naturezaMap[postagem?.natureza] || "não especificado"
 
     const modalStyle = {
         position: 'absolute',
@@ -176,7 +195,7 @@ function Detalhes() {
         borderRadius: 2,
     }
 
-    const renderAlertas = (votos) => {
+    const renderAlertas = (votos = 0) => {
         const max = 5
         const cheias = Math.min(parseInt(votos, 10), max)
         const vazias = max - cheias
@@ -197,7 +216,12 @@ function Detalhes() {
         )
     }
     
-    const isCurrentUser = parseInt(usuario) === parseInt(id)
+    const dataCriacao = new Date(postagem?.criacao)
+    const data = dataCriacao.toLocaleDateString()
+    const hora = dataCriacao.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    const fotoPerfil = perfilData?.foto_perfil ? `https://api.nero.lat/${perfilData.foto_perfil}` : '/images/sem-foto.png'
+    const nomePerfil = perfilData?.first_name || 'Anônimo'
+    const isCurrentUser = parseInt(postagem?.usuario) === parseInt(id_user)
     const isTipoOuvidoria = tipo === "ouvidoria"
 
     return (
@@ -215,13 +239,13 @@ function Detalhes() {
                         <div className='flex gap-2'>
                             <img
                                 className='h-10 w-10 rounded-full object-cover'
-                                src={fotoPerfil}
+                                src={`${fotoPerfil}`}
                                 alt={`Perfil de ${nomePerfil}`}
                             />
                             <div>
                                 <h1 className='font-semibold text-xl -mb-1'>{nomePerfil}</h1>
                                 <h1 className='font-[400] text-sm text-gray-400'>
-                                    Relatando um problema de {nome}
+                                    Relatando um problema de {naturezaConvertida}
                                 </h1>
                             </div>
                         </div>
@@ -232,15 +256,15 @@ function Detalhes() {
                             <h1>Criado em: {data} às {hora}</h1>
                         </div>
                         <img
-                            alt={`Imagem de ${nome}`}
-                            src={imagem ? `https://api.nero.lat/${imagem}` : '/images/sem-imagem.png'}
+                            alt={`Imagem de ${nomePerfil}`}
+                            src={postagem?.imagem ? `https://api.nero.lat/${postagem?.imagem}` : '/images/sem-imagem.png'}
                             className='w-full h-full rounded-t-lg'
                         />
                     </div>
                     <div className='flex justify-between items-center rounded-b-lg bg-white p-1'>
                         <div className='px-3 flex flex-col font-semibold'>
-                            <p className='leading-4 my-2'>{descricao}</p>
-                            <h1 className='flex'>Votos: <p className='font-normal ml-1 mt-[5px] flex'>{renderAlertas(votos)}</p></h1>
+                            <p className='leading-4 my-2'>{postagem?.descricao}</p>
+                            <h1 className='flex'>Votos: <p className='font-normal ml-1 mt-[5px] flex'>{renderAlertas(postagem?.votos)}</p></h1>
                             <h1 className='flex'>Natureza: <p className='font-normal ml-1 mb-3'>{naturezaConvertida}.</p></h1>
                         </div>
                     </div>
@@ -344,14 +368,16 @@ function Detalhes() {
                 </Box>
             </Modal>
 
-            <Editar
-                id={state.id}
-                setShowEditarModal={setShowEditarModal}
-                showEditarModal={showEditarModal}
-                titulo={state.titulo}
-                descricao={state.descricao}
-                natureza={state.natureza}
-            />
+            {postagem && 
+                <Editar
+                    id={id}
+                    setShowEditarModal={setShowEditarModal}
+                    showEditarModal={showEditarModal}
+                    titulo={postagem.titulo}
+                    descricao={postagem.descricao}
+                    natureza={postagem.natureza}
+                />
+            }
         </div>
     )
 }
