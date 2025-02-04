@@ -151,6 +151,26 @@ function Detalhes() {
         }
     }
 
+    const enviarFormulario = async () => {
+        try{
+            const response = await fetch(`https://api.nero.lat/api/postagem/${id}/enviar-formulario/`,{
+                method: 'POST',
+                headers: {
+                    accept: 'application/json',
+                    Authorization: `Token ${token}`,
+                }
+            })
+            if(response.ok){
+                console.log('Formulário enviado com sucesso')
+                alert('Formulário enviado com sucesso para ouvidouria local.')
+            } else {
+                alert('Complete seus dados pessoais para enviar formularios de reclamação.')
+            }
+        }catch(error){
+            console.error('Erro ao enviar formulário:', error)
+        }
+    }
+
     useEffect(() => {
         const fetchData = async () => {
             await fetchPostagem()   
@@ -306,8 +326,14 @@ function Detalhes() {
                     )}
                     {isCurrentUser && (
                         <div className='flex gap-2 mt-4 mb-[100px]'>
+                            <button className='botao-estilo-1' onClick={() => setShowComentarioModal(true)}>
+                                Comentar
+                            </button>
                             <button className='botao-estilo-1' onClick={() => setShowEditarModal(true)}>
                                 Editar
+                            </button>
+                            <button className='botao-estilo-2' onClick={() => enviarFormulario()}>
+                                Enviar Formulario
                             </button>
                         </div>
                     )}

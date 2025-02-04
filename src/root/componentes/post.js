@@ -143,9 +143,12 @@ const Post = React.forwardRef(({ id }, ref) => {
             })
             if (response.ok) {
                 setShowAvaliacaoModal(false)
-                setAvaliacao(0)
+                
             } else {
                 console.error('Erro ao enviar avaliação:', await response.text())
+                alert('Não é possivel executar esta ação.')
+                setShowAvaliacaoModal(false)
+                setAvaliacao(0)
             }
         } catch (error) {
             console.error('Erro ao enviar avaliação:', error)
@@ -177,6 +180,26 @@ const Post = React.forwardRef(({ id }, ref) => {
             setLoadingR(false)
             setLoadingF(false)
             window.location.reload()
+        }
+    }
+
+    const enviarFormulario = async () => {
+        try{
+            const response = await fetch(`https://api.nero.lat/api/postagem/${id}/enviar-formulario/`,{
+                method: 'POST',
+                headers: {
+                    accept: 'application/json',
+                    Authorization: `Token ${token}`,
+                }
+            })
+            if(response.ok){
+                console.log('Formulário enviado com sucesso')
+                alert('Formulário enviado com sucesso para ouvidouria local.')
+            } else {
+                alert('Complete seus dados pessoais para enviar formularios de reclamação.')
+            }
+        }catch(error){
+            console.error('Erro ao enviar formulário:', error)
         }
     }
 
@@ -300,6 +323,9 @@ const Post = React.forwardRef(({ id }, ref) => {
                             </button>
                             <button className='botao-estilo-1' onClick={() => setShowEditarModal(true)}>
                                 Editar
+                            </button>
+                            <button className='botao-estilo-2' onClick={() => enviarFormulario()}>
+                                Enviar Formulario
                             </button>
                         </div>
                     )}
