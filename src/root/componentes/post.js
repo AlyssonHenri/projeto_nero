@@ -212,29 +212,7 @@ const Post = React.forwardRef(({ id }, ref) => {
                     Authorization: `Token ${token}`,
                 }
             })
-            if(response.ok){
-                alert('Formulário enviado com sucesso para ouvidouria local.')
-            } else {    const deletarPostagem = async () => {
-                try{
-                    const response = await fetch(`https://api.nero.lat/api/postagem/${id}`,{
-                        method: 'DELETE',
-                        headers: {
-                            accept: 'application/json',
-                            Authorization: `Token ${token}`,
-                        }
-                    })
-                    if(response.ok){
-                        alert('Formulário enviado com sucesso para ouvidouria local.')
-                    } else {
-                        alert('Não foi possivel deletar sua postagem, tente novamete mais tarde.')
-                    }
-                }catch(error){
-                    console.error('Erro ao enviar formulário:', error)
-                } finally {
-                    setShowDeletarModal(false)
-                    window.reload()
-                }
-            }
+            if(!response.ok){
                 alert('Não foi possivel deletar sua postagem, tente novamete mais tarde.')
             }
         }catch(error){

@@ -252,9 +252,7 @@ function Detalhes() {
                     Authorization: `Token ${token}`,
                 }
             })
-            if(response.ok){
-                alert('Formulário enviado com sucesso para ouvidouria local.')
-            } else {
+            if(!response.ok){
                 alert('Não foi possivel deletar sua postagem, tente novamete mais tarde.')
             }
         }catch(error){
@@ -434,6 +432,28 @@ function Detalhes() {
                         </Box>
                     </Modal>
 
+                    <Modal open={showDeletarModal} onClose={() => setShowDeletarModal(false)}>
+                        <Box
+                            sx={{
+                                ...modalStyle,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}
+                        >
+                            <Typography variant='h6'>Deseja mesmo deletar a postagem?</Typography>
+                            <div className='flex mt-3 w-full gap-10 justify-between'>
+                                <button className="botao-estilo-1 px-4" onClick={() => deletarPostagem()}>
+                                    Sim
+                                </button>
+                                <button className="botao-estilo-2 px-4" onClick={() => setShowDeletarModal(false)}>
+                                    Não
+                                </button>
+                            </div>
+                        </Box>
+                    </Modal>
+
                     {postagem && 
                         <Editar
                             id={postagem?.id}
@@ -551,6 +571,7 @@ function Detalhes() {
                         </div>
                     )}
             </div>
+
             <Modal open={showComentarioModal} onClose={() => setShowComentarioModal(false)}>
                 <Box
                     sx={{
@@ -602,6 +623,28 @@ function Detalhes() {
                     <div style={{ alignSelf: 'flex', justifyContent: 'center', justifyItems: 'center' }}>
                         <button className="botao-estilo-1 px-4" onClick={enviarAvaliacao}>
                             Enviar
+                        </button>
+                    </div>
+                </Box>
+            </Modal>
+
+            <Modal open={showDeletarModal} onClose={() => setShowDeletarModal(false)}>
+                <Box
+                    sx={{
+                        ...modalStyle,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
+                >
+                    <Typography variant='h6'>Deseja mesmo deletar a postagem?</Typography>
+                    <div className='flex mt-3 w-full gap-10 justify-between'>
+                        <button className="botao-estilo-1 px-4" onClick={() => deletarPostagem()}>
+                            Sim
+                        </button>
+                        <button className="botao-estilo-2 px-4" onClick={() => setShowDeletarModal(false)}>
+                            Não
                         </button>
                     </div>
                 </Box>
