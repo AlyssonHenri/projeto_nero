@@ -214,26 +214,52 @@ function Mapa() {
     })
 
     const DesenhoRegioes = () => {
-        const map = useMap()
+        const map = useMap();
+    
+        // Função para converter RGB em hexadecimal
+        // usar pra fazer o controle de intensidade de cor das regiões
+        const rgbParaHex = (r, g, b) => {
+            return '#' + [r, g, b].map(x => {
+                const hex = x.toString(16)
+                return hex.length === 1 ? '0' + hex : hex
+            }).join('')
+        }
     
         return (
             <>
                 {dadosCidades.map((cidade) => (
                     <React.Fragment key={cidade.id}>
-                        {cidade.bairros.map((bairro) => (
-                            <Polygon
-                                key={bairro.id}
-                                positions={bairro.pontos}
-                                fillOpacity={0.1}
-                                pathOptions={{ color: "#494b4f", weight: 1 }}
-                                eventHandlers={{
-                                    click: () => {
-                                        const bounds = L.latLngBounds(bairro.pontos)
-                                        map.fitBounds(bounds)
-                                    },
-                                }}
-                            />
-                        ))}
+                        {cidade.bairros.map((bairro) => {
+                            const qtdReclamacoes = bairro.quantidade_reclamacoes || 0
+                            const intensidade = Math.min( qtdReclamacoes / 20, 1)
+                            
+                            // Calcula componentes de cor
+                            const vermelho = Math.round(73 + 182 * intensidade)
+                            const verde = Math.round(75 * (1 - intensidade))
+                            const azul = Math.round(79 * (1 - intensidade))
+                            
+                            // Gera cor hexadecimal
+                            const cor = rgbParaHex(vermelho, verde, azul)
+    
+                            return (
+                                <Polygon
+                                    key={bairro.id}
+                                    positions={bairro.pontos}
+                                    fillOpacity={0.1}
+                                    pathOptions={{ 
+                                        color: cor,
+                                        fillColor: cor,
+                                        weight: 1 
+                                    }}
+                                    eventHandlers={{
+                                        click: () => {
+                                            const bounds = L.latLngBounds(bairro.pontos)
+                                            map.fitBounds(bounds)
+                                        },
+                                    }}
+                                />
+                            )
+                        })}
                     </React.Fragment>
                 ))}
             </>
