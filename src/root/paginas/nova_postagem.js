@@ -14,7 +14,7 @@ const iconePersonalizado = () => {
         </svg>
     `
     return new L.Icon({
-        iconUrl: `data:image/svg+xmlbase64,${btoa(svgIcon)}`,
+        iconUrl: `data:image/svg+xml;base64,${btoa(svgIcon)}`,
         iconSize: [30, 30],
     })
 }

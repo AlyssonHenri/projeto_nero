@@ -210,6 +210,11 @@ function Perfil() {
     const handleImageError = (event) => {
         event.target.src = '/images/sem-imagem.png'
     }
+
+    const sair = () => {
+        localStorage.clear()
+        navigate('/')
+    }
     
     return (
         <div className='relative h-full min-h-screen w-screen bg-[#e9e8e8]'>
@@ -220,23 +225,30 @@ function Perfil() {
                 </div>
             }
             <NavBar />
-            <div className={`flex flex-row items-center justify-start ml-3 py-1 -mb-3 ${isBrowser ? 'px-[5%]' : 'mt-12'}`}>
-                <label htmlFor="profile-image-upload" className="cursor-pointer">
-                    <img
-                        src={formData.profile_image}
-                        alt='Imagem de perfil'
-                        className='h-14 w-14 rounded-full mr-2 object-cover'
-                        onError={handleImageError}
+            <div className={`flex flex-row justify-between ${isBrowser ? 'px-[5%]' : 'mt-12'}`}>
+                <div className={`flex flex-row items-center justify-start ml-3 py-1 -mb-3`}>
+                    <label htmlFor="profile-image-upload" className="cursor-pointer">
+                        <img
+                            src={formData.profile_image}
+                            alt='Imagem de perfil'
+                            className='h-14 w-14 rounded-full mr-2 object-cover'
+                            onError={handleImageError}
+                        />
+                    </label>
+                    <input
+                        id="profile-image-upload"
+                        type="file"
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                        onChange={handleProfileImageChange}
                     />
-                </label>
-                <input
-                    id="profile-image-upload"
-                    type="file"
-                    accept="image/*"
-                    style={{ display: 'none' }}
-                    onChange={handleProfileImageChange}
-                />
-                <h1>{formData.username}</h1>
+                    <h1>{formData.username}</h1>
+                </div>
+                <div className={`flex flex-col gap-2 mt-4 w-20 ${isBrowser ? 'mr-[5%]' : 'mr-[2%]'}`}>
+                    <button className="botao-estilo-2" onClick={() => sair()}>
+                        Sair
+                    </button>
+                </div>
             </div>
             <div className={`flex flex-col h-screen w-[95%] ml-3 ${isBrowser ? 'px-[5%]' : ''}`}>
                 <form>

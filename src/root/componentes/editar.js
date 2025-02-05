@@ -4,6 +4,7 @@ import { Modal, Box, TextField } from '@mui/material'
 import { isBrowser } from 'react-device-detect'
 import { MapContainer, Marker, TileLayer, useMapEvents } from 'react-leaflet'
 import { useNavigate } from 'react-router-dom'
+import { form } from 'framer-motion/client'
 
 const iconePersonalizado = () => {
     const svgIcon = `
@@ -42,14 +43,19 @@ function Editar({ id, setShowEditarModal, showEditarModal, titulo, descricao, na
 
     const handleEditarPostagem = async () => {
         try {
-            const formDataEditar = new FormData()
-            formDataEditar.append('titulo', formData.titulo)
-            formDataEditar.append('descricao', formData.descricao)
-            formDataEditar.append('natureza', formData.natureza)
+            const formDataEditar = new FormData();
+            formDataEditar.append('titulo', formData.titulo);
+            formDataEditar.append('descricao', formData.descricao);
+            formDataEditar.append('natureza', formData.natureza);
+    
+            if (pinPosition) {
+                formDataEditar.append('geolocalizacao', `${pinPosition.lat},${pinPosition.lng}`)
+            }
+    
             if (formData.imagem) {
                 formDataEditar.append('imagem', dadosImagem)
             }
-
+    
             const response = await fetch(`https://api.nero.lat/api/postagem/${id}/`, {
                 method: 'PATCH',
                 headers: {
@@ -58,7 +64,7 @@ function Editar({ id, setShowEditarModal, showEditarModal, titulo, descricao, na
                 },
                 body: formDataEditar,
             })
-
+    
             if (response.ok) {
                 setShowEditarModal(false)
                 navigate('/home')
@@ -70,6 +76,7 @@ function Editar({ id, setShowEditarModal, showEditarModal, titulo, descricao, na
             console.error('Erro ao editar postagem:', error)
         }
     }
+    
 
     const PinPos = () => {
         useMapEvents({
