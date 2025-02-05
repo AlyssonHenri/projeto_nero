@@ -5,7 +5,7 @@ import Comentario from '../componentes/comentario'
 import Editar from '../componentes/editar'
 import { RiArrowLeftSLine } from 'react-icons/ri'
 import { PiSirenDuotone } from 'react-icons/pi'
-import { Modal, Box, TextField, CircularProgress } from '@mui/material'
+import { Modal, Box, TextField, CircularProgress, Typography } from '@mui/material'
 import { isBrowser } from 'react-device-detect'
 
 function Detalhes() {
