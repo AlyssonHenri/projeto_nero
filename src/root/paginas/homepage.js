@@ -84,7 +84,7 @@ function Homepage() {
 
         const interval = setInterval(() => {
             fetchPosts()
-        }, 30000) // 30 segundos
+        }, 5000) // 5 segundos
 
         return () => clearInterval(interval)
     }, [id])

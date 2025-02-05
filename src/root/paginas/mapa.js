@@ -30,7 +30,7 @@ function Mapa() {
         3: "#10B981",
         4: "#9E7D44",
         5: "#6B7280",
-        6: "#E5E7EB",
+        6: "#5B5C5E",
     }
 
     const tipoTexto = {
@@ -100,7 +100,7 @@ function Mapa() {
                                     ...post,
                                     lat: parseFloat(lat),
                                     lng: parseFloat(lng),
-                                    cor: tipoCor[post.natureza] || "#E5E7EB",
+                                    cor: tipoCor[post.natureza] || "#5B5C5E",
                                     tipo: tipoTexto[post.natureza] || "Outro",
                                 }
                             }

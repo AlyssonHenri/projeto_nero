@@ -4,7 +4,7 @@ import { PiSirenDuotone } from 'react-icons/pi'
 import { useNavigate } from 'react-router-dom'
 import Comentario from './comentario'
 import Editar from './editar'
-import { Box, CircularProgress, Modal, TextField } from '@mui/material'
+import { Box, CircularProgress, Modal, TextField, Typography } from '@mui/material'
 
 const Post = React.forwardRef(({ id }, ref) => {
     const token = localStorage.getItem('token')
@@ -16,6 +16,7 @@ const Post = React.forwardRef(({ id }, ref) => {
     const [showComentarioModal, setShowComentarioModal] = useState(false)
     const [showAvaliacaoModal, setShowAvaliacaoModal] = useState(false)
     const [showEditarModal, setShowEditarModal] = useState(false)
+    const [showDeletarModal, setShowDeletarModal] = useState(false)
     const [loadingF, setLoadingF] = useState(false)
     const [loadingR, setLoadingR] = useState(false)
     const [perfilData, setPerfilData] = useState(null)
@@ -193,13 +194,54 @@ const Post = React.forwardRef(({ id }, ref) => {
                 }
             })
             if(response.ok){
-                console.log('Formulário enviado com sucesso')
                 alert('Formulário enviado com sucesso para ouvidouria local.')
             } else {
                 alert('Complete seus dados pessoais para enviar formularios de reclamação.')
             }
         }catch(error){
             console.error('Erro ao enviar formulário:', error)
+        }
+    }
+
+    const deletarPostagem = async () => {
+        try{
+            const response = await fetch(`https://api.nero.lat/api/postagem/${id}`,{
+                method: 'DELETE',
+                headers: {
+                    accept: 'application/json',
+                    Authorization: `Token ${token}`,
+                }
+            })
+            if(response.ok){
+                alert('Formulário enviado com sucesso para ouvidouria local.')
+            } else {    const deletarPostagem = async () => {
+                try{
+                    const response = await fetch(`https://api.nero.lat/api/postagem/${id}`,{
+                        method: 'DELETE',
+                        headers: {
+                            accept: 'application/json',
+                            Authorization: `Token ${token}`,
+                        }
+                    })
+                    if(response.ok){
+                        alert('Formulário enviado com sucesso para ouvidouria local.')
+                    } else {
+                        alert('Não foi possivel deletar sua postagem, tente novamete mais tarde.')
+                    }
+                }catch(error){
+                    console.error('Erro ao enviar formulário:', error)
+                } finally {
+                    setShowDeletarModal(false)
+                    window.reload()
+                }
+            }
+                alert('Não foi possivel deletar sua postagem, tente novamete mais tarde.')
+            }
+        }catch(error){
+            console.error('Erro ao enviar formulário:', error)
+        } finally {
+            setShowDeletarModal(false)
+            window.reload()
         }
     }
 
@@ -324,6 +366,9 @@ const Post = React.forwardRef(({ id }, ref) => {
                             <button className='botao-estilo-1' onClick={() => setShowEditarModal(true)}>
                                 Editar
                             </button>
+                            <button className='botao-estilo-1' onClick={() => setShowDeletarModal(true)}>
+                                Deletar
+                            </button>
                             <button className='botao-estilo-2' onClick={() => enviarFormulario()}>
                                 Enviar Formulario
                             </button>
@@ -381,6 +426,28 @@ const Post = React.forwardRef(({ id }, ref) => {
                         <div style={{ alignSelf: 'flex', justifyContent: 'center', justifyItems: 'center' }}>
                             <button className="botao-estilo-1 px-4" onClick={enviarAvaliacao}>
                                 Enviar
+                            </button>
+                        </div>
+                    </Box>
+                </Modal>
+
+                <Modal open={showDeletarModal} onClose={() => setShowDeletarModal(false)}>
+                    <Box
+                        sx={{
+                            ...modalStyle,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
+                    >
+                        <Typography variant='h6'>Deseja mesmo deletar a postagem?</Typography>
+                        <div className='flex mt-3 w-full gap-10 justify-between'>
+                            <button className="botao-estilo-1 px-4" onClick={() => deletarPostagem()}>
+                                Sim
+                            </button>
+                            <button className="botao-estilo-2 px-4" onClick={() => setShowDeletarModal(false)}>
+                                Não
                             </button>
                         </div>
                     </Box>

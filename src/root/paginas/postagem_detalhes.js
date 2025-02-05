@@ -20,6 +20,7 @@ function Detalhes() {
     const [loadingF, setLoadingF] = useState(false)
     const [loadingR, setLoadingR] = useState(false)
     const [postagem, setPostagem] = useState(null)
+    const [showDeletarModal, setShowDeletarModal] = useState(false)
     const [perfilData, setPerfilData] = useState(null)
     const token = localStorage.getItem('token')
     const id_user = localStorage.getItem('id')
@@ -241,6 +242,28 @@ function Detalhes() {
             </>
         )
     }
+
+    const deletarPostagem = async () => {
+        try{
+            const response = await fetch(`https://api.nero.lat/api/postagem/${id}`,{
+                method: 'DELETE',
+                headers: {
+                    accept: 'application/json',
+                    Authorization: `Token ${token}`,
+                }
+            })
+            if(response.ok){
+                alert('Formulário enviado com sucesso para ouvidouria local.')
+            } else {
+                alert('Não foi possivel deletar sua postagem, tente novamete mais tarde.')
+            }
+        }catch(error){
+            console.error('Erro ao enviar formulário:', error)
+        } finally {
+            setShowDeletarModal(false)
+            window.reload()
+        }
+    }
     
     const dataCriacao = new Date(postagem?.criacao)
     const data = dataCriacao.toLocaleDateString()
@@ -345,6 +368,9 @@ function Detalhes() {
                                 </button>
                                 <button className='botao-estilo-1' onClick={() => setShowEditarModal(true)}>
                                     Editar
+                                </button>
+                                <button className='botao-estilo-1' onClick={() => setShowDeletarModal(true)}>
+                                    Deletar
                                 </button>
                                 <button className='botao-estilo-2' onClick={() => enviarFormulario()}>
                                     Enviar Formulario
@@ -506,15 +532,22 @@ function Detalhes() {
                     )}
                     {isCurrentUser && (
                         <div className='flex gap-2 mt-4 mb-[100px]'>
-                            <button className='botao-estilo-1' onClick={() => setShowComentarioModal(true)}>
-                                Comentar
-                            </button>
-                            <button className='botao-estilo-1' onClick={() => setShowEditarModal(true)}>
-                                Editar
-                            </button>
-                            <button className='botao-estilo-2' onClick={() => enviarFormulario()}>
-                                Enviar Formulario
-                            </button>
+                            <div className='w-[50%]'>
+                                <button className='botao-estilo-1' onClick={() => setShowComentarioModal(true)}>
+                                    Comentar
+                                </button>
+                                <button className='botao-estilo-1 mt-2' onClick={() => setShowEditarModal(true)}>
+                                    Editar
+                                </button>
+                            </div>
+                            <div className='w-[50%]'>
+                                <button className='botao-estilo-1' onClick={() => setShowDeletarModal(true)}>
+                                    Deletar
+                                </button>
+                                <button className='botao-estilo-2 mt-2' onClick={() => enviarFormulario()}>
+                                    Enviar Formulário
+                                </button>
+                            </div>
                         </div>
                     )}
             </div>
