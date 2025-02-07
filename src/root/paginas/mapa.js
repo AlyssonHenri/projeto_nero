@@ -21,7 +21,7 @@ function Mapa() {
     const [filtros, setFiltros] = useState({
         tempo: [],
         categoria: [],
-        avaliacoes: [],
+        bairros: [],
     })
 
     const tipoCor = {
@@ -122,7 +122,7 @@ function Mapa() {
             try {
                 const response = await fetch("https://api.nero.lat/api/informacoes/cidades/", {
                     headers: { Accept: "application/json" },
-                });
+                })
                 if (response.ok) {
                     const data = await response.json()
                     setDadosCidades(data)
@@ -162,10 +162,20 @@ function Mapa() {
     const aplicarOuRemoverFiltro = (tipo, valor) => {
         setFiltros((prev) => ({
             ...prev,
-            [tipo]: prev[tipo].includes(valor)
-                ? prev[tipo].filter((v) => v !== valor)
-                : [...prev[tipo], valor],
+            [tipo]: prev[tipo].includes(valor) ? prev[tipo].filter((v) => v !== valor) : [...prev[tipo], valor],
         }))
+    }
+
+    const pontoDentroDoPoligono = (ponto, poligono) => {
+        let intersecoes = 0
+        for (let i = 0; i < poligono.length; i++) {
+            const [x1, y1] = poligono[i]
+            const [x2, y2] = poligono[(i + 1) % poligono.length]
+            if ((y1 > ponto[1]) !== (y2 > ponto[1]) && ponto[0] < ((x2 - x1) * (ponto[1] - y1)) / (y2 - y1) + x1) {
+                intersecoes++
+            }
+        }
+        return intersecoes % 2 !== 0
     }
 
     const renderModal = () => {
@@ -176,6 +186,8 @@ function Mapa() {
             opcoes = ["Hoje", "Esta Semana", "Este Mês"]
         } else if (modalAberto === "Categoria") {
             opcoes = Object.values(tipoTexto)
+        } else if (modalAberto === "Bairros") {
+            opcoes = dadosCidades.flatMap((cidade) => cidade.bairros).map((bairro) => bairro.nome)
         }
 
         return (
@@ -204,20 +216,19 @@ function Mapa() {
     }
 
     const postagensFiltradas = postagens.filter((post) => {
-        const filtroDataAtivo = filtros.tempo.length > 0
-        if (filtroDataAtivo) {
-            const datasFiltro = filtros.tempo.map((f) => intervaloDatas[f]())
-            if (!datasFiltro.some((data) => dayjs(post.criacao).isAfter(data))) return false
+        if (filtros.bairros.length > 0) {
+            const bairroSelecionado = dadosCidades.flatMap((cidade) => cidade.bairros)
+                .find((bairro) => filtros.bairros.includes(bairro.nome))
+            if (bairroSelecionado && !pontoDentroDoPoligono([post.lat, post.lng], bairroSelecionado.pontos)) {
+                return false
+            }
         }
-        if (filtros.categoria.length > 0 && !filtros.categoria.includes(post.tipo)) return false
         return true
     })
 
     const DesenhoRegioes = () => {
-        const map = useMap();
+        const map = useMap()
     
-        // Função para converter RGB em hexadecimal
-        // usar pra fazer o controle de intensidade de cor das regiões
         const rgbParaHex = (r, g, b) => {
             return '#' + [r, g, b].map(x => {
                 const hex = x.toString(16)
@@ -230,15 +241,17 @@ function Mapa() {
                 {dadosCidades.map((cidade) => (
                     <React.Fragment key={cidade.id}>
                         {cidade.bairros.map((bairro) => {
+                            if (filtros.bairros.length > 0 && !filtros.bairros.includes(bairro.nome)) {
+                                return null
+                            }
+    
                             const qtdReclamacoes = bairro.quantidade_reclamacoes || 0
-                            const intensidade = Math.min( qtdReclamacoes / 20, 1)
-                            
-                            // Calcula componentes de cor
+                            const intensidade = Math.min(qtdReclamacoes / 20, 1)
+    
                             const vermelho = Math.round(73 + 182 * intensidade)
                             const verde = Math.round(75 * (1 - intensidade))
                             const azul = Math.round(79 * (1 - intensidade))
-                            
-                            // Gera cor hexadecimal
+    
                             const cor = rgbParaHex(vermelho, verde, azul)
     
                             return (
@@ -246,10 +259,10 @@ function Mapa() {
                                     key={bairro.id}
                                     positions={bairro.pontos}
                                     fillOpacity={0.1}
-                                    pathOptions={{ 
+                                    pathOptions={{
                                         color: cor,
                                         fillColor: cor,
-                                        weight: 1 
+                                        weight: 1
                                     }}
                                     eventHandlers={{
                                         click: () => {
@@ -336,6 +349,14 @@ function Mapa() {
                         onClick={() => abrirModal("Categoria")}
                     >
                         📋 Categoria
+                    </button>
+                    <button
+                        className={`botao-estilo-4 w-full  ${
+                            filtros.bairros.length > 0 ? "bg-[#022148c5] text-white" : ""
+                        }`}
+                        onClick={() => abrirModal("Bairros")}
+                    >
+                        🏘️ Bairro
                     </button>
                 </div>
 
